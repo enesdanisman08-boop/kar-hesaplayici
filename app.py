@@ -50,57 +50,80 @@ simdi_tarih = datetime.now().strftime("%d.%m.%Y")
 if menu == "🤖 AI Kalori & Beslenme Asistanı":
     st.subheader("🤖 Akıllı Besin & Kalori Hesaplayıcı Robot")
     st.write(
-        "Öğününü normal bir cümle olarak yaz (Örn: *70gr yulaf, 4 yemek kaşığı yoğurt, 1 ölçek protein tozu, 1 adet muz*).")
+        "Öğününü normal bir cümle olarak yaz (Örn: *30gr yulaf, 4 yemek kaşığı yoğurt, 1 ölçek protein tozu, 1 adet muz*).")
 
     ogun_tipi = st.selectbox("Öğün Türü", ["Kahvaltı", "Öğle Yemeği", "Akşam Yemeği", "Ara Öğün"])
     kullanici_metni = st.text_area("Yediğin şeyleri yaz:",
-                                   "70gr yulaf, 4 yemek kaşığı yoğurt, 1 ölçek protein tozu, 1 adet muz, 1 tatlı kaşığı damla çikolata, 1 tatlı kaşığı hindistan cevizi tozu.")
+                                   "30gr yulaf, 4 yemek kaşığı yoğurt, 1 ölçek protein tozu, 1 adet muz, 1 tatlı kaşığı damla çikolata, 1 tatlı kaşığı hindistan cevizi tozu.")
 
     if st.button("🤖 AI Robot ile Hesapla ve Kaydet"):
         metin = kullanici_metni.lower()
 
-        # Nokta atışı profesyonel besin analizi tablosu
         kalori = 0.0
         protein = 0.0
         seker = 0.0
 
-        # Eğer standart senin favori kahvaltı kâsen girildiyse direkt nokta atışı doğru değerleri verelim:
-        if "yulaf" in metin and "yoğurt" in metin and "protein tozu" in metin:
-            kalori = 602.0
-            protein = 45.0
-            seker = 18.5
-        else:
-            # Diğer genel besinler için akıllı hesaplama
-            if "yulaf" in metin:
-                kalori += 272.0
-                protein += 9.1
-                seker += 1.0
-            if "yoğurt" in metin or "yogurt" in metin:
-                kalori += 50.0
-                protein += 3.6
-                seker += 3.2
-            if "protein tozu" in metin or "ölçek" in metin:
-                kalori += 120.0
-                protein += 24.0
-                seker += 1.0
-            if "muz" in metin:
-                kalori += 105.0
-                protein += 1.3
-                seker += 12.0
-            if "çikolata" in metin or "cikolata" in metin:
-                kalori += 30.0
-                protein += 0.3
-                seker += 3.0
-            if "hindistan cevizi" in metin:
-                kalori += 25.0
-                protein += 0.2
-                seker += 0.3
+        # Metin içindeki kelimeleri ve sayıları akıllıca tarayan fonksiyon
+        kelimeler = metin.split(",")
 
-            # Hiçbiri eşleşmezse ortalama mantıklı bir değer
-            if kalori == 0:
-                kalori = 450.0
-                protein = 30.0
-                seker = 8.0
+        for parca in kelimeler:
+            p = parca.strip()
+            # Sayıyı bulmaya çalışalım
+            sayi = 1.0
+            for kelime in p.split():
+                temiz_kelime = kelime.replace("gr", "").replace("g", "").replace("adet", "").replace("ölçek",
+                                                                                                     "").replace(
+                    "kaşığı", "").replace("tatlı", "").replace("yemek", "").strip()
+                try:
+                    sayi = float(temiz_kelime)
+                    break
+                except:
+                    continue
+
+            # Besin türüne göre dinamik hesaplama
+            if "yulaf" in p:
+                # 100g yulaf ~ 388 kcal, 13g protein, 1.5g şeker
+                gram = sayi if sayi > 5 else 70.0  # Eğer sayı bulunamadıysa varsayılan 70 al
+                kalori += 388 * (gram / 100.0)
+                protein += 13.0 * (gram / 100.0)
+                seker += 1.5 * (gram / 100.0)
+
+            elif "yoğurt" in p or "yogurt" in p:
+                # 1 yemek kaşığı yoğurt ~ 20g (100g yoğurt ~ 60 kcal, 4.5g protein, 4g şeker)
+                kasik = sayi if sayi < 20 else 4.0
+                gram_yogurt = kasik * 20.0
+                kalori += 60 * (gram_yogurt / 100.0)
+                protein += 4.5 * (gram_yogurt / 100.0)
+                seker += 4.0 * (gram_yogurt / 100.0)
+
+            elif "protein tozu" in p or "ölçek" in p:
+                olcek = sayi if sayi < 5 else 1.0
+                kalori += 120.0 * olcek
+                protein += 24.0 * olcek
+                seker += 1.0 * olcek
+
+            elif "muz" in p:
+                adet = sayi if sayi < 5 else 1.0
+                kalori += 105.0 * adet
+                protein += 1.3 * adet
+                seker += 12.0 * adet
+
+            elif "çikolata" in p or "cikolata" in p:
+                kasik = sayi if sayi < 10 else 1.0
+                kalori += 50.0 * kasik
+                protein += 0.5 * kasik
+                seker += 5.0 * kasik
+
+            elif "hindistan cevizi" in p:
+                kasik = sayi if sayi < 10 else 1.0
+                kalori += 35.0 * kasik
+                protein += 0.3 * kasik
+                seker += 0.5 * kasik
+
+        if kalori == 0:
+            kalori = 400.0
+            protein = 25.0
+            seker = 10.0
 
         st.markdown("---")
         st.success("🤖 AI Robot Analizi Tamamlandı!")
@@ -114,7 +137,7 @@ if menu == "🤖 AI Kalori & Beslenme Asistanı":
         with open("spor_beslenme_kayitlari.txt", "a", encoding="utf-8") as f:
             f.write(kayit_satiri)
 
-        st.toast("Öğün başarıyla ve doğru değerlerle kaydedildi!", icon="🔥")
+        st.toast("Öğün başarıyla ve gramajına göre doğru hesaplanıp kaydedildi!", icon="🔥")
 
     st.markdown("---")
     st.subheader("📜 Geçmiş Günlük Beslenme Günlüğü")
