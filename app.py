@@ -8,7 +8,6 @@ st.set_page_config(page_title="Al-Sat Kâr Hesaplayıcı", page_icon="📱", lay
 if "giris_yapildi" not in st.session_state:
     st.session_state["giris_yapildi"] = False
 
-# Belirlediğimiz izinli kullanıcılar ve şifreleri (Kullanıcı Adı : Şifre)
 ICERDEKILER = {
     "enes": "1453",
     "usta": "3434",
@@ -16,7 +15,6 @@ ICERDEKILER = {
     "admin": "admin"
 }
 
-# Eğer giriş yapılmadıysa sadece bu giriş ekranını göster
 if not st.session_state["giris_yapildi"]:
     st.title("🔒 Yetkili Giriş Paneli")
     st.write("Bu uygulamayı kullanmak için lütfen giriş yapın.")
@@ -36,7 +34,7 @@ if not st.session_state["giris_yapildi"]:
 
     st.stop()
 
-# --- GİRİŞ YAPILDIKTAN SONRAKİ ASIL UYGULAMA ---
+# --- ASIL UYGULAMA ---
 
 if st.sidebar.button("🚪 Çıkış Yap"):
     st.session_state["giris_yapildi"] = False
@@ -73,19 +71,22 @@ if menu == "Yeni Cihaz Hesapla":
         m_col2.metric("Hedef Satış", f"{satis_fiyati:,.0f} TL")
         m_col3.metric("Net Kâr", f"{net_kar:,.0f} TL", delta=f"%{kar_orani:.1f}")
 
+        # Görsel Renkli Durum Göstergeleri (1. Özellik)
         if net_kar <= 0:
-            st.error("⚠️ DİKKAT: Bu işlemden zarar ediyorsun veya kârın yok!")
+            st.error(f"⚠️ ZARAR! Bu ticaret seni zarara sokuyor (Net Kâr: {net_kar:,.0f} TL). Kesinlikle bulaşma!")
         elif kar_orani < 15:
-            st.warning(f"💡 BİLGİ: Kâr marjı biraz düşük (%{kar_orani:.1f}). Emeğine değmeyebilir.")
+            st.warning(f"💡 DÜŞÜK KÂR (%{kar_orani:.1f}): Kâr marjı az, riske ve emeğe değmeyebilir.")
+        elif kar_orani < 30:
+            st.info(f"👍 İYİ KÂR (%{kar_orani:.1f}): Gayet makul ve standart bir ticaret, değerlendirilebilir.")
         else:
-            st.success("✅ HARİKA: Çok güzel ticaret, bu cihaz alınıp toplanır!")
+            st.success(f"🔥 EFSANE TİCARET (%{kar_orani:.1f}): Çok yüksek kâr marjı! Bu cihaz kaçmaz, hemen alıp topla!")
 
         simdi = datetime.now().strftime("%d.%m.%Y %H:%M")
         with open("ticaret_kayitlari.txt", "a", encoding="utf-8") as dosya:
             dosya.write(
                 f"[{simdi}] Cihaz: {cihaz_modeli.upper()} | Maliyet: {toplam_maliyet:.0f} TL | Satış: {satis_fiyati:.0f} TL | Net Kâr: {net_kar:.0f} TL (%{kar_orani:.1f})\n")
 
-        st.toast("Başarıyla 'ticaret_kayitlari.txt' dosyasına kaydedildi!", icon="📁")
+        st.toast("Başarıyla kaydedildi!", icon="📁")
 
 elif menu == "Geçmiş Kayıtlar & Özet":
     st.subheader("📜 Geçmiş Ticaret Kayıtları")
@@ -110,7 +111,7 @@ elif menu == "Geçmiş Kayıtlar & Özet":
             col_b.metric("Toplam Net Kâr", f"{toplam_genel_kar:,.0f} TL")
 
     except FileNotFoundError:
-        st.warning("Henüz kayıt dosyası oluşturulmamış. 'Yeni Cihaz Hesapla' sekmesinden kayıt ekleyebilirsin.")
+        st.warning("Henüz kayıt dosyası oluşturulmamış.")
 
 elif menu == "Kayıtları Temizle":
     st.subheader("🗑️ Kayıt Yönetimi")
