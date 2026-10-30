@@ -1,8 +1,9 @@
 from datetime import datetime
+import time
 import streamlit as st
 
 # Sayfa Ayarları
-st.set_page_config(page_title="Enes Kişisel Spor & Yaşam Paneli", page_icon="💪", layout="centered")
+st.set_page_config(page_title="Enes Spor & Yaşam Paneli", page_icon="💪", layout="centered")
 
 # --- KULLANICI GİRİŞ SİSTEMİ ---
 if "giris_yapildi" not in st.session_state:
@@ -10,7 +11,7 @@ if "giris_yapildi" not in st.session_state:
 
 ICERDEKILER = {
     "enes": "1453",
-    "admin": "admin"
+    "misafir": "1905"
 }
 
 if not st.session_state["giris_yapildi"]:
@@ -32,13 +33,20 @@ if not st.session_state["giris_yapildi"]:
 
     st.stop()
 
-# --- SOL MENÜ (SIDEBAR) ZENGİNLEŞTİRME ---
+# --- SOL MENÜ (SIDEBAR) & TEMA SEÇİCİ ---
 
 with st.sidebar:
+    st.markdown("## 🎨 Görünüm & Tema")
+    secilen_tema = st.selectbox(
+        "Tema Seç:",
+        ["🟢 Neon Gym (Siyah & Yeşil)", "🔴 Cyber Red (Agresif Kırmızı)", "⚪ Clean White (Ferah Beyaz)",
+         "⚫ Standart Koyu"]
+    )
+
+    st.markdown("---")
     st.markdown("## 🏆 Sporcu Profili")
     st.info("**Sporcu:** Enes\n\n**Sistem:** 5 Gün PPL + Kardiyo\n\n**Durum:** Definasyon & Kas İnşası 🔥")
 
-    # Vücut ve Dönüşüm Özeti
     col_s1, col_s2 = st.columns(2)
     col_s1.metric("Güncel Kilo", "80.5 kg", "-54.5 kg")
     col_s2.metric("Yağ Oranı", "%14.5", "Hedef: %12")
@@ -48,7 +56,6 @@ with st.sidebar:
 
     st.markdown("---")
 
-    # Daha şık ve açık menü yapısı
     st.markdown("### 🧭 Navigasyon")
     menu = st.radio(
         "Bölüm Seç:",
@@ -64,28 +71,104 @@ with st.sidebar:
 
     st.markdown("---")
 
-    # Sol Menüde Hızlı 1RM (Maksimum Ağırlık) Hesaplayıcı
+    # Set Arası Dinlenme Sayacı
+    with st.expander("⏱️ Set Arası Dinlenme Sayacı"):
+        sure = st.selectbox("Süre Seç:", [60, 90, 120, 180], format_func=lambda x: f"{x} Saniye")
+        if st.button("▶️ Sayacı Başlat", use_container_width=True):
+            bar = st.progress(0)
+            durum_yazisi = st.empty()
+            for i in range(sure):
+                kalan = sure - i
+                durum_yazisi.markdown(f"⏳ Kalan Süre: **{kalan} sn**")
+                bar.progress((i + 1) / sure)
+                time.sleep(1)
+            durum_yazisi.success("🔔 Süre Bitti! Sıradaki sete geç knk! 💪")
+
+    # Hızlı 1RM Hesaplayıcı
     with st.expander("⚡ Hızlı 1RM (Max Ağırlık) Hesapla"):
-        st.caption("Kaldırdığın ağırlık ve tekrarı gir, 1 tekrarda max kaç kg basabileceğini gör.")
         kilo_1rm = st.number_input("Kaldırılan Ağırlık (kg)", min_value=1.0, value=80.0, step=2.5)
         tekrar_1rm = st.number_input("Tekrar Sayısı", min_value=1, max_value=30, value=8, step=1)
-        # Epley Formülü
         max_agirlik = kilo_1rm * (1 + tekrar_1rm / 30.0)
         st.success(f"🔥 Tahmini 1RM: **{max_agirlik:.1f} kg**")
-
-    st.markdown("---")
-
-    # Günlük Sabit Hedef Hatırlatıcı
-    with st.expander("🎯 Günlük Sabit Hedeflerim"):
-        st.write("🔹 **Kalori:** ~2200 - 2400 kcal")
-        st.write("🔹 **Protein:** 160g - 180g")
-        st.write("🔹 **Su:** Minimum 4.0 Litre")
-        st.write("🔹 **Kardiyo:** 40 dk Incline Yürüyüş")
 
     st.markdown("---")
     if st.button("🚪 Çıkış Yap", use_container_width=True):
         st.session_state["giris_yapildi"] = False
         st.rerun()
+
+# --- ÖZEL CSS TEMA KODLARI ---
+
+if secilen_tema == "🟢 Neon Gym (Siyah & Yeşil)":
+    st.markdown("""
+        <style>
+        .stApp {
+            background: linear-gradient(135deg, #0a0f0d 0%, #111a16 100%);
+            color: #e0f2e9;
+        }
+        div[data-testid="stMetric"] {
+            background-color: #16241d;
+            border: 1px solid #00ff88;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
+        }
+        .stButton>button {
+            background-color: #00ff88 !important;
+            color: #05140c !important;
+            font-weight: bold !important;
+            border-radius: 8px !important;
+            border: none !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+elif secilen_tema == "🔴 Cyber Red (Agresif Kırmızı)":
+    st.markdown("""
+        <style>
+        .stApp {
+            background: linear-gradient(135deg, #120606 0%, #1f0b0b 100%);
+            color: #fcebeb;
+        }
+        div[data-testid="stMetric"] {
+            background-color: #290f0f;
+            border: 1px solid #ff2a2a;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 0 12px rgba(255, 42, 42, 0.25);
+        }
+        .stButton>button {
+            background-color: #ff2a2a !important;
+            color: #ffffff !important;
+            font-weight: bold !important;
+            border-radius: 8px !important;
+            border: none !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+elif secilen_tema == "⚪ Clean White (Ferah Beyaz)":
+    st.markdown("""
+        <style>
+        .stApp {
+            background-color: #f4f7f9;
+            color: #1c252c;
+        }
+        div[data-testid="stMetric"] {
+            background-color: #ffffff;
+            border: 2px solid #007bff;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        .stButton>button {
+            background-color: #007bff !important;
+            color: #ffffff !important;
+            font-weight: bold !important;
+            border-radius: 8px !important;
+            border: none !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
 
 # --- ANA EKRAN İÇERİĞİ ---
 
@@ -97,16 +180,28 @@ simdi_tarih = datetime.now().strftime("%d.%m.%Y")
 
 if menu == "🤖 AI Kalori & Beslenme":
     st.subheader("🤖 Akıllı Besin & Kalori Hesaplayıcı Robot")
-    st.write(
-        "Öğününü normal bir cümle olarak yaz (Örn: *30gr yulaf, 4 yemek kaşığı yoğurt, 1 ölçek protein tozu, 1 adet muz*).")
+
+    # Hızlı Öğün Şablonları
+    st.caption("⚡ Hızlı Öğün Şablonları (Tıkla Otomatik Doldursun):")
+    if "varsayilan_ogun" not in st.session_state:
+        st.session_state[
+            "varsayilan_ogun"] = "70gr yulaf, 4 yemek kaşığı yoğurt, 1 ölçek protein tozu, 1 adet muz, 1 tatlı kaşığı damla çikolata, 1 tatlı kaşığı hindistan cevizi tozu."
+
+    s_col1, s_col2, s_col3 = st.columns(3)
+    if s_col1.button("🥣 Favori Yulaf Kasem"):
+        st.session_state[
+            "varsayilan_ogun"] = "70gr yulaf, 4 yemek kaşığı yoğurt, 1 ölçek protein tozu, 1 adet muz, 1 tatlı kaşığı damla çikolata, 1 tatlı kaşığı hindistan cevizi tozu."
+    if s_col2.button("🍗 Tavuk & Pilav"):
+        st.session_state["varsayilan_ogun"] = "200gr tavuk, 150gr pilav"
+    if s_col3.button("🍳 Sabah Yumurta"):
+        st.session_state["varsayilan_ogun"] = "3 adet yumurta, 50gr yulaf"
 
     ogun_tipi = st.selectbox("Öğün Türü",
                              ["Kahvaltı", "Öğle Yemeği", "Akşam Yemeği", "Antrenman Öncesi", "Antrenman Sonrası",
                               "Ara Öğün"])
-    kullanici_metni = st.text_area("Yediğin şeyleri yaz:",
-                                   "30gr yulaf, 4 yemek kaşığı yoğurt, 1 ölçek protein tozu, 1 adet muz, 1 tatlı kaşığı damla çikolata, 1 tatlı kaşığı hindistan cevizi tozu.")
+    kullanici_metni = st.text_area("Yediğin şeyleri yaz:", value=st.session_state["varsayilan_ogun"])
 
-    if st.button("🤖 AI Robot ile Hesapla ve Kaydet"):
+    if st.button("🤖 AI Robot ile Hesapla ve Kaydet", use_container_width=True):
         metin = kullanici_metni.lower()
 
         kalori = 0.0
@@ -155,13 +250,13 @@ if menu == "🤖 AI Kalori & Beslenme":
 
             elif "çikolata" in p or "cikolata" in p:
                 kasik = sayi if sayi < 10 else 1.0
-                kalori += 50.0 * kasik
+                kalori += 30.0 * kasik
                 protein += 0.5 * kasik
-                seker += 5.0 * kasik
+                seker += 3.0 * kasik
 
             elif "hindistan cevizi" in p:
                 kasik = sayi if sayi < 10 else 1.0
-                kalori += 35.0 * kasik
+                kalori += 25.0 * kasik
                 protein += 0.3 * kasik
                 seker += 0.5 * kasik
 
@@ -174,6 +269,12 @@ if menu == "🤖 AI Kalori & Beslenme":
                 gram = sayi if sayi > 10 else 150.0
                 kalori += 130 * (gram / 100.0)
                 protein += 2.7 * (gram / 100.0)
+
+            elif "yumurta" in p:
+                adet = sayi if sayi < 15 else 3.0
+                kalori += 70.0 * adet
+                protein += 6.0 * adet
+                seker += 0.4 * adet
 
         if kalori == 0:
             kalori = 400.0
@@ -202,8 +303,20 @@ if menu == "🤖 AI Kalori & Beslenme":
         if not satirlar:
             st.info("Henüz kayıt bulunmuyor.")
         else:
+            bugun_kalori = 0.0
             for s in satirlar:
                 st.text(s.strip())
+                if simdi_tarih in s and "Kalori: " in s:
+                    try:
+                        k_deger = float(s.split("Kalori: ")[1].split(" kcal")[0])
+                        bugun_kalori += k_deger
+                    except:
+                        pass
+
+            st.markdown("---")
+            st.markdown(f"### 🎯 Bugünün Toplam Kalori Durumu: **{bugun_kalori:.0f} / 2300 kcal**")
+            oran = min(int((bugun_kalori / 2300.0) * 100), 100)
+            st.progress(oran)
     except FileNotFoundError:
         st.info("Henüz kayıt dosyası yok.")
 
@@ -235,9 +348,7 @@ elif menu == "🗓️ Antrenman & PPL Takvimi":
         st.info("Henüz antrenman kaydı yok.")
 
 elif menu == "🏋️‍♂️ Ağırlık & PR Takibi":
-    st.subheader("🏋️‍♂️ Salonda Bastığın Ağırlıklar & PR (Kişisel Rekor) Takibi")
-    st.write("Hangi harekette kaç kg ile kaç tekrar yaptığını kaydet, gelişimini takip et!")
-
+    st.subheader("🏋️‍♂️ Salonda Bastığın Ağırlıklar & PR Takibi")
     hareket = st.selectbox("Hareket Seç", [
         "Bench Press / Dumbbell Press",
         "Incline Dumbbell Press",
