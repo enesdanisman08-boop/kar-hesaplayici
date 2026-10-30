@@ -71,7 +71,7 @@ if menu == "Yeni Cihaz Hesapla":
         m_col2.metric("Hedef Satış", f"{satis_fiyati:,.0f} TL")
         m_col3.metric("Net Kâr", f"{net_kar:,.0f} TL", delta=f"%{kar_orani:.1f}")
 
-        # Görsel Renkli Durum Göstergeleri (1. Özellik)
+        # Görsel Renkli Durum Göstergeleri
         if net_kar <= 0:
             st.error(f"⚠️ ZARAR! Bu ticaret seni zarara sokuyor (Net Kâr: {net_kar:,.0f} TL). Kesinlikle bulaşma!")
         elif kar_orani < 15:
@@ -89,7 +89,7 @@ if menu == "Yeni Cihaz Hesapla":
         st.toast("Başarıyla kaydedildi!", icon="📁")
 
 elif menu == "Geçmiş Kayıtlar & Özet":
-    st.subheader("📜 Geçmiş Ticaret Kayıtları")
+    st.subheader("📜 Geçmiş Ticaret Kayıtları ve Arama")
 
     try:
         with open("ticaret_kayitlari.txt", "r", encoding="utf-8") as dosya:
@@ -98,17 +98,30 @@ elif menu == "Geçmiş Kayıtlar & Özet":
         if len(satirlar) == 0:
             st.info("Henüz hiç kayıt bulunmuyor.")
         else:
-            toplam_genel_kar = 0
+            # Arama Çubuğu (Arama Özelliği)
+            arama_terimi = st.text_input("🔍 Cihaz Ara (Örn: iPhone, S24, Samsung vb.)").strip().lower()
+
+            # Filtreleme işlemi
+            filtrelenmis_satirlar = []
             for satir in satirlar:
-                st.text(satir.strip())
-                if "Net Kâr: " in satir:
-                    kar_kismi = satir.split("Net Kâr: ")[1].split(" TL")[0]
-                    toplam_genel_kar += float(kar_kismi)
+                if arama_terimi in satir.lower():
+                    filtrelenmis_satirlar.append(satir)
 
             st.markdown("---")
-            col_a, col_b = st.columns(2)
-            col_a.metric("Toplam Cihaz", f"{len(satirlar)} Adet")
-            col_b.metric("Toplam Net Kâr", f"{toplam_genel_kar:,.0f} TL")
+            if len(filtrelenmis_satirlar) == 0:
+                st.warning("Aradığınız kritere uygun kayıt bulunamadı.")
+            else:
+                toplam_genel_kar = 0
+                for satir in filtrelenmis_satirlar:
+                    st.text(satir.strip())
+                    if "Net Kâr: " in satir:
+                        kar_kismi = satir.split("Net Kâr: ")[1].split(" TL")[0]
+                        toplam_genel_kar += float(kar_kismi)
+
+                st.markdown("---")
+                col_a, col_b = st.columns(2)
+                col_a.metric("Listelenen Cihaz", f"{len(filtrelenmis_satirlar)} Adet")
+                col_b.metric("Toplam Net Kâr", f"{toplam_genel_kar:,.0f} TL")
 
     except FileNotFoundError:
         st.warning("Henüz kayıt dosyası oluşturulmamış.")
