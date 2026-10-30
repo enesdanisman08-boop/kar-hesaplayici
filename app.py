@@ -1,4 +1,5 @@
 from datetime import datetime
+import os
 import time
 import streamlit as st
 
@@ -36,7 +37,6 @@ if not st.session_state["giris_yapildi"]:
 # --- SOL MENÜ (SIDEBAR) & KOMPAKT DÜZEN ---
 
 with st.sidebar:
-    # Kompakt Tema Seçici (Açılır Kapanır Expander ile yer kaplamaz)
     with st.expander("🎨 Tema & Renk Ayarları"):
         secilen_tema = st.selectbox(
             "Tema Seç:",
@@ -56,6 +56,7 @@ with st.sidebar:
         "Gitmek İstediğin Bölüm:",
         [
             "📅 30 Günlük Diyet & Takvim",
+            "📸 Vücut Dönüşüm & Form Arşivi",
             "🤖 AI Kalori & Beslenme",
             "🔥 Kardiyo & Yağ Yakım Hesaplayıcı",
             "💤 Uyku & Toparlanma (Recovery)",
@@ -69,7 +70,6 @@ with st.sidebar:
 
     st.markdown("---")
 
-    # Sporcu Profili Özet Kartı
     st.markdown("## 🏆 Sporcu Özeti")
     st.info(
         "👤 **Enes** (178 cm | 84 kg)\n\n"
@@ -83,7 +83,6 @@ with st.sidebar:
 
     st.markdown("---")
 
-    # Pratik Araçlar
     with st.expander("⏱️ Set Arası Dinlenme"):
         sure = st.selectbox("Süre Seç:", [60, 90, 120, 180], format_func=lambda x: f"{x} Saniye", key="dinlenme_sure")
         if st.button("▶️ Sayacı Başlat", use_container_width=True):
@@ -107,7 +106,6 @@ with st.sidebar:
         st.session_state["giris_yapildi"] = False
         st.rerun()
 
-    # Eğer yukarıda expander açılmadıysa varsayılan atayalım
     if 'secilen_tema' not in locals():
         secilen_tema = "🟢 Neon Gym (Siyah & Yeşil)"
 
@@ -341,7 +339,74 @@ if menu == "📅 30 Günlük Diyet & Takvim":
             else:
                 st.error(k_gun.strip())
 
-# --- 2. BÖLÜM: AI KALORİ & BESLENME ASİSTANI ---
+# --- 2. BÖLÜM: VÜCUT DÖNÜŞÜM & FORM ARŞİVİ ---
+elif menu == "📸 Vücut Dönüşüm & Form Arşivi":
+    st.subheader("📸 Vücut Dönüşüm & Form Fotoğraf Arşivi")
+    st.write(
+        "İster bilgisayarından ister telefondan form fotoğraflarını yükle; hangi gün olduğunu ve kilosunu not et, değişimini anlık takip et!")
+
+    # Fotoğrafların kaydedileceği klasör
+    UPLOAD_FOLDER = "form_fotolari"
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.makedirs(UPLOAD_FOLDER)
+
+    with st.form("form_yukleme_formu", clear_on_submit=True):
+        yuklenen_dosya = st.file_uploader("Form Fotoğrafı Seç (JPG, PNG)", type=["jpg", "jpeg", "png"])
+
+        f_col1, f_col2 = st.columns(2)
+        with f_col1:
+            form_etiket = st.selectbox("Dönem / Hafta",
+                                       ["1. Hafta (Başlangıç)", "10. Gün Formu", "2. Hafta Formu", "15. Gün Formu",
+                                        "3. Hafta Formu", "25. Gün Formu", "30. Gün (Final Formu)", "Özel Tarih Formu"])
+        with f_col2:
+            form_kilo = st.text_input("O Anki Kilon & Yağ Durumu (Örn: 84.0 kg)", "84.0 kg")
+
+        form_notu = st.text_area("Form Notu (Örn: Sabah karnı tok/aç, pump durumu vb.)")
+
+        submit_foto = st.form_submit_button("📸 Fotoğrafı Arşive Kaydet", use_container_width=True)
+
+        if submit_foto and yuklenen_dosya is not None:
+            dosya_adi = f"{simdi_tarih.replace('.', '-')}_{yuklenen_dosya.name}"
+            dosya_yolu = os.path.join(UPLOAD_FOLDER, dosya_adi)
+
+            with open(dosya_yolu, "wb") as f:
+                f.write(yuklenen_dosya.getbuffer())
+
+            # Bilgileri txt dosyasına kaydedelim
+            meta_satir = f"{dosya_adi}|{simdi_tarih}|{form_etiket}|{form_kilo}|{form_notu}\n"
+            with open("form_arsiv_meta.txt", "a", encoding="utf-8") as meta_f:
+                meta_f.write(meta_satir)
+
+            st.success("Form fotoğrafı arşive başarıyla eklendi! 🔥")
+
+    st.markdown("---")
+    st.subheader("🏛️ Geçmiş Form Arşivin & Değişim Galerisi")
+
+    try:
+        if os.path.exists("form_arsiv_meta.txt"):
+            with open("form_arsiv_meta.txt", "r", encoding="utf-8") as meta_f:
+                meta_satirlar = meta_f.readlines()
+
+            if not meta_satirlar:
+                st.info("Henüz arşivde form fotoğrafı bulunmuyor.")
+            else:
+                for sat in reversed(meta_satirlar):
+                    parcalar = sat.strip().split("|")
+                    if len(parcalar) == 5:
+                        d_adi, d_tarih, d_etiket, d_kilo, d_not = parcalar
+                        p_yolu = os.path.join(UPLOAD_FOLDER, d_adi)
+
+                        if os.path.exists(p_yolu):
+                            with st.container():
+                                st.markdown(f"### 📌 {d_etiket} — ({d_tarih})")
+                                st.image(p_yolu, caption=f"Kilo: {d_kilo} | Not: {d_not}", width=350)
+                                st.markdown("---")
+        else:
+            st.info("Henüz arşiv kaydı yok.")
+    except Exception as e:
+        st.warning("Arşiv yüklenirken bilgi okunamadı.")
+
+# --- 3. BÖLÜM: AI KALORİ & BESLENME ASİSTANI ---
 elif menu == "🤖 AI Kalori & Beslenme":
     st.subheader("🤖 Akıllı Besin & Kalori Hesaplayıcı Robot")
 
@@ -644,84 +709,46 @@ elif menu == "🏋️‍♂️ Ağırlık & PR Takibi":
 
     hareket_kutuphanesi = {
         "💪 Ön Kol (Biceps & Forearm)": [
-            "Barbell Curl (Düz Bar)",
-            "EZ-Bar Curl (Z-Bar)",
-            "Dumbbell Alternating Curl",
-            "Hammer Curl (Çekiç Tutuş)",
-            "Incline Dumbbell Curl (Sehpada)",
-            "Preacher Curl (Scott Sehpası / Makine)",
-            "Concentration Curl",
-            "Cable Bicep Curl (Alt Makara)",
-            "High Cable Curl (Çift Kol Pozlama)",
-            "Spider Curl",
-            "Reverse Barbell / Cable Curl (Ön Kol & Bilek)",
-            "Wrist Curl (Bilek Güçlendirme)",
+            "Barbell Curl (Düz Bar)", "EZ-Bar Curl (Z-Bar)", "Dumbbell Alternating Curl",
+            "Hammer Curl (Çekiç Tutuş)", "Incline Dumbbell Curl (Sehpada)", "Preacher Curl (Scott Sehpası / Makine)",
+            "Concentration Curl", "Cable Bicep Curl (Alt Makara)", "High Cable Curl (Çift Kol Pozlama)",
+            "Spider Curl", "Reverse Barbell / Cable Curl (Ön Kol & Bilek)", "Wrist Curl (Bilek Güçlendirme)",
             "➕ Listede Olmayan Özel Hareket Yaz"
         ],
         "🔱 Arka Kol (Triceps)": [
-            "Triceps Rope Pushdown (Halat İtiş)",
-            "Triceps Straight / V-Bar Pushdown (Düz/V Demir)",
-            "Overhead Cable Triceps Extension (Baş Üstü Halat)",
-            "Overhead Dumbbell Extension (Tek/Çift Dumbbell)",
-            "Skullcrusher / Lying Triceps Extension (Alna Press)",
-            "Close Grip Bench Press (Dar Tutuş Göğüs Press)",
-            "Triceps Dips (Vücut Ağırlığı / Ağırlıklı)",
-            "Bench Dips",
+            "Triceps Rope Pushdown (Halat İtiş)", "Triceps Straight / V-Bar Pushdown (Düz/V Demir)",
+            "Overhead Cable Triceps Extension (Baş Üstü Halat)", "Overhead Dumbbell Extension (Tek/Çift Dumbbell)",
+            "Skullcrusher / Lying Triceps Extension (Alna Press)", "Close Grip Bench Press (Dar Tutuş Göğüs Press)",
+            "Triceps Dips (Vücut Ağırlığı / Ağırlıklı)", "Bench Dips",
             "Single Arm Cable Reverse Pushdown (Tek Kol Ters Tutuş)",
-            "Dumbbell Triceps Kickback",
-            "➕ Listede Olmayan Özel Hareket Yaz"
+            "Dumbbell Triceps Kickback", "➕ Listede Olmayan Özel Hareket Yaz"
         ],
         "🔥 Göğüs (Chest)": [
-            "Barbell Bench Press",
-            "Dumbbell Flat Bench Press",
-            "Incline Barbell Bench Press (Üst Göğüs)",
-            "Incline Dumbbell Press (Üst Göğüs)",
-            "Chest Press Machine",
-            "Pec Deck / Butterfly (Makine Sıkıştırma)",
-            "Cable Crossover (Üst / Orta / Alt Makara)",
-            "Dumbbell Fly / Incline Fly",
-            "Chest Dips (Göğüs Odaklı)",
-            "Push-up / Şınav",
-            "➕ Listede Olmayan Özel Hareket Yaz"
+            "Barbell Bench Press", "Dumbbell Flat Bench Press", "Incline Barbell Bench Press (Üst Göğüs)",
+            "Incline Dumbbell Press (Üst Göğüs)", "Chest Press Machine", "Pec Deck / Butterfly (Makine Sıkıştırma)",
+            "Cable Crossover (Üst / Orta / Alt Makara)", "Dumbbell Fly / Incline Fly", "Chest Dips (Göğüs Odaklı)",
+            "Push-up / Şınav", "➕ Listede Olmayan Özel Hareket Yaz"
         ],
         "🦅 Sırt (Back)": [
-            "Lat Pulldown (Geniş Tutuş)",
-            "Close Grip / V-Bar Lat Pulldown (Dar Tutuş)",
-            "Pull-up / Barfiks",
-            "Barbell Bent-Over Row",
-            "Seated Cable Row (Oturarak Çekiş)",
-            "One-Arm Dumbbell Row (Tek Kol Testere)",
-            "T-Bar Row / Chest Supported Row",
-            "Rope Straight-Arm Pulldown (Halatla Kanat İtiş)",
-            "Deadlift",
-            "Hyperextension (Alt Sırt / Bel)",
-            "➕ Listede Olmayan Özel Hareket Yaz"
+            "Lat Pulldown (Geniş Tutuş)", "Close Grip / V-Bar Lat Pulldown (Dar Tutuş)", "Pull-up / Barfiks",
+            "Barbell Bent-Over Row", "Seated Cable Row (Oturarak Çekiş)", "One-Arm Dumbbell Row (Tek Kol Testere)",
+            "T-Bar Row / Chest Supported Row", "Rope Straight-Arm Pulldown (Halatla Kanat İtiş)", "Deadlift",
+            "Hyperextension (Alt Sırt / Bel)", "➕ Listede Olmayan Özel Hareket Yaz"
         ],
         "🥥 Omuz (Shoulders)": [
-            "Overhead Dumbbell Shoulder Press",
-            "Military Press / Barbell Overhead Press",
-            "Shoulder Press Machine",
-            "Smith Machine Shoulder Press",
-            "Dumbbell Lateral Raise (Yan Omuz Açış)",
+            "Overhead Dumbbell Shoulder Press", "Military Press / Barbell Overhead Press", "Shoulder Press Machine",
+            "Smith Machine Shoulder Press", "Dumbbell Lateral Raise (Yan Omuz Açış)",
             "Cable Lateral Raise (Kabloda Yan Omuz)",
-            "Face Pull (Arka Omuz & Trapez)",
-            "Reverse Pec Deck / Rear Delt Fly (Arka Omuz Makine)",
+            "Face Pull (Arka Omuz & Trapez)", "Reverse Pec Deck / Rear Delt Fly (Arka Omuz Makine)",
             "Dumbbell Front Raise (Ön Omuz)",
-            "Dumbbell / Barbell Shrug (Trapez)",
-            "➕ Listede Olmayan Özel Hareket Yaz"
+            "Dumbbell / Barbell Shrug (Trapez)", "➕ Listede Olmayan Özel Hareket Yaz"
         ],
         "🦵 Bacak & Karın (Legs & Core)": [
-            "Barbell Squat / Smith Machine Squat",
-            "Leg Press",
-            "Hack Squat",
-            "Leg Extension (Ön Bacak Makine)",
-            "Lying / Seated Leg Curl (Arka Bacak Makine)",
-            "Romanian Deadlift - RDL (Arka Bacak & Kalça)",
-            "Bulgarian Split Squat / Walking Lunge",
-            "Standing / Seated Calf Raise (Kalf)",
+            "Barbell Squat / Smith Machine Squat", "Leg Press", "Hack Squat", "Leg Extension (Ön Bacak Makine)",
+            "Lying / Seated Leg Curl (Arka Bacak Makine)", "Romanian Deadlift - RDL (Arka Bacak & Kalça)",
+            "Bulgarian Split Squat / Walking Lunge", "Standing / Seated Calf Raise (Kalf)",
             "Cable Crunch (Kabloda Karın)",
-            "Hanging Leg Raise (Asılarak Karın)",
-            "➕ Listede Olmayan Özel Hareket Yaz"
+            "Hanging Leg Raise (Asılarak Karın)", "➕ Listede Olmayan Özel Hareket Yaz"
         ]
     }
 
@@ -821,7 +848,8 @@ elif menu == "🗑️ Kayıtları Temizle":
             "supplement_takip.txt",
             "spor_notlari.txt",
             "kardiyo_kayitlari.txt",
-            "recovery_kayitlari.txt"
+            "recovery_kayitlari.txt",
+            "form_arsiv_meta.txt"
         ]
         for dosya in dosyalar:
             with open(dosya, "w", encoding="utf-8") as f:
