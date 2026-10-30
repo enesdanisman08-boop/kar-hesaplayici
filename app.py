@@ -23,7 +23,7 @@ if "secilen_tema" not in st.session_state:
 
 ICERDEKILER = {
     "enes": "1453",
-    "admin": "admin"
+    "emirhan": "1903"
 }
 
 if not st.session_state["giris_yapildi"]:
