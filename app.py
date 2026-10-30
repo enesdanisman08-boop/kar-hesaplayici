@@ -11,7 +11,7 @@ if "giris_yapildi" not in st.session_state:
 
 ICERDEKILER = {
     "enes": "1453",
-    "misafir": "1905"
+    "admin": "admin"
 }
 
 if not st.session_state["giris_yapildi"]:
@@ -45,14 +45,18 @@ with st.sidebar:
 
     st.markdown("---")
     st.markdown("## 🏆 Sporcu Profili")
-    st.info("**Sporcu:** Enes\n\n**Sistem:** 5 Gün PPL + Kardiyo\n\n**Durum:** Definasyon & Kas İnşası 🔥")
+    st.info(
+        "**Sporcu:** Enes (178 cm)\n\n"
+        "**Sistem:** 5 Gün PPL + Incline Kardiyo\n\n"
+        "**Strateji:** Kas Korumalı Definasyon 🔥\n\n"
+        "**Hedef:** 80-81 kg | %10-12 Yağ Oranı"
+    )
 
     col_s1, col_s2 = st.columns(2)
-    col_s1.metric("Güncel Kilo", "80.5 kg", "-54.5 kg")
-    col_s2.metric("Yağ Oranı", "%14.5", "Hedef: %12")
+    col_s1.metric("Güncel Kilo", "84.0 kg", "Hedef: 80.5 kg")
+    col_s2.metric("Yağ Oranı", "%16.0", "Hedef: %11")
 
-    st.caption("🚀 Dönüşüm Hedefi İlerlemesi (%90)")
-    st.progress(90)
+    st.caption("🎯 Kas Kayıpsız Definasyon Hedefi:\nGünlük **2250 kcal** | **185g+ Protein**")
 
     st.markdown("---")
 
@@ -60,7 +64,10 @@ with st.sidebar:
     menu = st.radio(
         "Bölüm Seç:",
         [
+            "📅 30 Günlük Diyet & Takvim",
             "🤖 AI Kalori & Beslenme",
+            "🔥 Kardiyo & Yağ Yakım Hesaplayıcı",
+            "💤 Uyku & Toparlanma (Recovery)",
             "🗓️ Antrenman & PPL Takvimi",
             "🏋️‍♂️ Ağırlık & PR Takibi",
             "💧 Supplement & Su",
@@ -173,15 +180,119 @@ elif secilen_tema == "⚪ Clean White (Ferah Beyaz)":
 # --- ANA EKRAN İÇERİĞİ ---
 
 st.title("💪 Enes Fitness & Yaşam Takip Paneli")
-st.write("Akıllı AI Asistanlı beslenme, antrenman, su ve supplement merkezi.")
+st.write("84 kg (%16 Yağ) ➡️ 80.5 kg (%11 Yağ) Kas Korumalı Definasyon Merkezi.")
 
 simdi = datetime.now().strftime("%d.%m.%Y %H:%M")
 simdi_tarih = datetime.now().strftime("%d.%m.%Y")
 
-if menu == "🤖 AI Kalori & Beslenme":
+# --- 1. BÖLÜM: 30 GÜNLÜK DİYET & KAMP TAKVİMİ ---
+if menu == "📅 30 Günlük Diyet & Takvim":
+    st.subheader("📅 30 Günlük Kas Korumalı Definasyon Kampı")
+    st.write(
+        "Her gün aynı şeyi yemekten sıkılmaman için senin sevdiğin besinlerle hazırlanmış **3 farklı rotasyon menüsü**. Gününü seç, menünü gör ve akşam uyup uymadığını işaretle!")
+
+    # Geçmiş kayıtları okuyup kamp ilerlemesini hesaplayalım
+    tamamlanan_gun_sayisi = 0
+    basarili_gun_sayisi = 0
+    kayitli_gunler = []
+    try:
+        with open("diyet_takvimi_kayitlari.txt", "r", encoding="utf-8") as f:
+            kayitli_gunler = f.readlines()
+            tamamlanan_gun_sayisi = len(kayitli_gunler)
+            for kg in kayitli_gunler:
+                if "✅ Tam Uydum" in kg:
+                    basarili_gun_sayisi += 1
+    except FileNotFoundError:
+        pass
+
+    # Üst Özet Kartları
+    k_col1, k_col2, k_col3 = st.columns(3)
+    k_col1.metric("Tamamlanan Kamp Günü", f"{tamamlanan_gun_sayisi} / 30 Gün")
+    k_col2.metric("Tam Uyulan Gün", f"{basarili_gun_sayisi} Gün", "Disiplin 🔥")
+    basari_orani = int((basarili_gun_sayisi / tamamlanan_gun_sayisi) * 100) if tamamlanan_gun_sayisi > 0 else 100
+    k_col3.metric("Kamp Başarı Oranı", f"%{basari_orani}")
+
+    st.caption(f"🚀 30 Günlük Kamp İlerlemesi (%{int((tamamlanan_gun_sayisi / 30) * 100)})")
+    st.progress(min(int((tamamlanan_gun_sayisi / 30.0) * 100), 100))
+
+    st.markdown("---")
+
+    # Gün Seçimi (1 - 30)
+    secilen_kamp_gunu = st.selectbox(
+        "📌 Planını Görmek veya İşaretlemek İstediğin Günü Seç:",
+        [f"{i}. Gün" for i in range(1, 31)]
+    )
+    gun_no = int(secilen_kamp_gunu.split(".")[0])
+
+    # Gün numarasına göre 3'lü Rotasyon Menüsü
+    if gun_no % 3 == 1:
+        menu_baslik = "🅰️ MENÜ A: Klasik Yulaf Kasesi & Çift Tavuk Günü (Yüksek Protein)"
+        kahvalti = "🥣 **Kahvaltı:** 70g Yulaf + 4 YK Yoğurt + 1 Ölçek Whey Protein + 1 Muz + 1 TK Damla Çikolata & Hindistan Cevizi (~600 kcal | 45g Protein)"
+        ogle = "🍗 **Öğle Yemeği:** 200g Haşlama/Izgara Tavuk Göğsü + 200g Pişmiş Basmati/Baldo Pirinç Pilavı + Bol Yeşillik (~590 kcal | 67g Protein)"
+        ara_ogun = "🍏 **Antrenman Öncesi / Ara Öğün:** 10-12 Adet Çiğ Badem veya Fındık + 1 Yeşil Elma + Sade Kahve (~180 kcal | 4g Protein)"
+        aksam = "🥗 **Akşam (Antrenman Sonrası):** 200g Tavuk Göğsü + 150g Pişmiş Pirinç Pilavı + Salata (1 TK Zeytinyağlı) + 1 Ölçek Whey (~640 kcal | 90g Protein)"
+        toplam_ozet = "🎯 **Günlük Toplam:** ~2010 - 2150 kcal | **~206g Protein** (Sıfır Kas Kaybı!)"
+    elif gun_no % 3 == 2:
+        menu_baslik = "🅱️ MENÜ B: Anne Köftesi / Kıyma & Yumurta Rotasyonu"
+        kahvalti = "🍳 **Kahvaltı:** 3 Tam Yumurta + 2 Yumurta Beyazı (Omlet) + 50g Yulaf (Sıcak su/süt ile) + 5-6 Zeytin + Domates/Salatalık (~520 kcal | 34g Protein)"
+        ogle = "🥩 **Öğle Yemeği:** 200g Izgara Köfte veya Yağsız Dana Kıyma Sote + 200g Pişmiş Pirinç Pilavı + Mevsim Salata (~680 kcal | 52g Protein)"
+        ara_ogun = "🍌 **Antrenman Öncesi / Ara Öğün:** 1 Ölçek Whey Protein + 1 Orta Boy Muz (~225 kcal | 25g Protein)"
+        aksam = "🍗 **Akşam Yemeği:** 200g Tavuk Göğsü + 150g Pişmiş Pirinç Pilavı + 1 Kase Yoğurt (~620 kcal | 70g Protein)"
+        toplam_ozet = "🎯 **Günlük Toplam:** ~2045 - 2150 kcal | **~181g Protein** (Demir ve Kreatin Deposu!)"
+    else:
+        menu_baslik = "🆎 MENÜ C: Performans & Yoğun Antrenman Günü (Bacak / Sırt Gününe İdeal)"
+        kahvalti = "🥣 **Kahvaltı:** 60g Yulaf + 1 Ölçek Whey Protein + 4 YK Yoğurt + 1 Tatlı Kaşığı Fıstık Ezmesi + Tarçın (~560 kcal | 43g Protein)"
+        ogle = "🍗 **Öğle Yemeği:** 250g Tavuk Göğsü + 250g Pişmiş Pirinç Pilavı + Salata (~735 kcal | 84g Protein)"
+        ara_ogun = "☕ **Antrenman Öncesi:** 1 Adet Muz + 10 Çiğ Badem + Espresso/Filtre Kahve (~190 kcal | 3g Protein)"
+        aksam = "🥩 **Akşam Yemeği:** 180g Köfte / Kıyma veya Tavuk + 100g Pişmiş Pirinç + Bol Yeşil Salata + 1 Kase Yoğurt (~580 kcal | 50g Protein)"
+        toplam_ozet = "🎯 **Günlük Toplam:** ~2065 - 2200 kcal | **~180g Protein** (Yüksek Enerji & Pump!)"
+
+    st.info(f"### 📋 {secilen_kamp_gunu} Beslenme Planın — {menu_baslik}\n\n"
+            f"{kahvalti}\n\n"
+            f"{ogle}\n\n"
+            f"{ara_ogun}\n\n"
+            f"{aksam}\n\n"
+            f"---\n{toplam_ozet}")
+
+    st.markdown("### ✅ Gün Sonu Kontrolü (Check-in)")
+    c_col1, c_col2 = st.columns(2)
+    with c_col1:
+        uyum_durumu = st.radio(
+            f"{secilen_kamp_gunu} Diyetine Uydun mu?",
+            ["✅ Tam Uydum (Sıfır Şeker / Tam Makro)", "⚠️ Ufak Değişiklik Oldu (Kalori Tuttu)",
+             "❌ Kaçamak Oldu (Cheat Meal)"]
+        )
+    with c_col2:
+        gunluk_su_takvim = st.slider(f"{secilen_kamp_gunu} İçilen Su (Litre)", 1.0, 6.0, 4.0, 0.5)
+        gunluk_not_takvim = st.text_input("Günün Notu (Örn: Pilavı annem yaptı, enerjim süperdi)")
+
+    if st.button(f"💾 {secilen_kamp_gunu} Durumunu Takvime Kaydet", use_container_width=True):
+        not_eki = f" | Not: {gunluk_not_takvim}" if gunluk_not_takvim else ""
+        su_rozet = "💧 Su Hedefi Tamam" if gunluk_su_takvim >= 4.0 else "⚠️ Su Az Kaldı"
+        takvim_satiri = f"[{simdi_tarih}] 📌 {secilen_kamp_gunu}: {uyum_durumu} | Su: {gunluk_su_takvim}L ({su_rozet}){not_eki}\n"
+
+        with open("diyet_takvimi_kayitlari.txt", "a", encoding="utf-8") as f:
+            f.write(takvim_satiri)
+        st.success(f"{secilen_kamp_gunu} başarıyla takvime işlendi knk! Hedefe adım adım! 🔥")
+        st.rerun()
+
+    st.markdown("---")
+    st.subheader("📜 30 Günlük Kamp Çizelgesi Geçmişin")
+    if not kayitli_gunler:
+        st.info("Henüz hiçbir günü işaretlemedin. Bugün 1. Gün ile başla!")
+    else:
+        for k_gun in reversed(kayitli_gunler):
+            if "✅ Tam Uydum" in k_gun:
+                st.success(k_gun.strip())
+            elif "⚠️" in k_gun:
+                st.warning(k_gun.strip())
+            else:
+                st.error(k_gun.strip())
+
+# --- 2. BÖLÜM: AI KALORİ & BESLENME ASİSTANI ---
+elif menu == "🤖 AI Kalori & Beslenme":
     st.subheader("🤖 Akıllı Besin & Kalori Hesaplayıcı Robot")
 
-    # Hızlı Öğün Şablonları
     st.caption("⚡ Hızlı Öğün Şablonları (Tıkla Otomatik Doldursun):")
     if "varsayilan_ogun" not in st.session_state:
         st.session_state[
@@ -304,21 +415,148 @@ if menu == "🤖 AI Kalori & Beslenme":
             st.info("Henüz kayıt bulunmuyor.")
         else:
             bugun_kalori = 0.0
+            bugun_protein = 0.0
             for s in satirlar:
                 st.text(s.strip())
                 if simdi_tarih in s and "Kalori: " in s:
                     try:
                         k_deger = float(s.split("Kalori: ")[1].split(" kcal")[0])
                         bugun_kalori += k_deger
+                        if "Protein: " in s:
+                            p_deger = float(s.split("Protein: ")[1].split("g")[0])
+                            bugun_protein += p_deger
                     except:
                         pass
 
             st.markdown("---")
-            st.markdown(f"### 🎯 Bugünün Toplam Kalori Durumu: **{bugun_kalori:.0f} / 2300 kcal**")
-            oran = min(int((bugun_kalori / 2300.0) * 100), 100)
-            st.progress(oran)
+            col_b1, col_b2 = st.columns(2)
+            with col_b1:
+                st.markdown(f"**🎯 Günlük Kalori:** {bugun_kalori:.0f} / 2250 kcal")
+                oran_k = min(int((bugun_kalori / 2250.0) * 100), 100)
+                st.progress(oran_k)
+            with col_b2:
+                st.markdown(f"**🥩 Günlük Protein (Kas Koruma):** {bugun_protein:.1f} / 185g")
+                oran_p = min(int((bugun_protein / 185.0) * 100), 100)
+                st.progress(oran_p)
     except FileNotFoundError:
         st.info("Henüz kayıt dosyası yok.")
+
+elif menu == "🔥 Kardiyo & Yağ Yakım Hesaplayıcı":
+    st.subheader("🔥 Eğimli Yürüyüş (Incline Treadmill) Kalori & Yağ Yakım Hesaplayıcı")
+    st.write(
+        "Kas kaybetmeden sadece yağ yakmak için en etkili silahın: **Eğimli Yürüyüş!** 84 kg ağırlığına göre bilimsel ACSM formülüyle ne kadar yaktığını hesapla.")
+
+    c_col1, c_col2, c_col3 = st.columns(3)
+    with c_col1:
+        kardiyo_kilo = st.number_input("Güncel Kilon (kg)", min_value=50.0, max_value=150.0, value=84.0, step=0.5)
+    with c_col2:
+        hiz_kmh = st.slider("Bant Hızı (km/s)", min_value=3.0, max_value=8.0, value=5.0, step=0.2)
+    with c_col3:
+        egim_yuzde = st.slider("Bant Eğimi (%)", min_value=0, max_value=18, value=12, step=1)
+
+    sure_dk = st.slider("Yürüyüş Süresi (Dakika)", min_value=10, max_value=90, value=40, step=5)
+
+    hiz_mdk = hiz_kmh * 16.667
+    egim_ondalik = egim_yuzde / 100.0
+    vo2 = (0.1 * hiz_mdk) + (1.8 * hiz_mdk * egim_ondalik) + 3.5
+    dk_kalori = (vo2 * kardiyo_kilo / 1000.0) * 5.0
+    toplam_yakilan = dk_kalori * sure_dk
+    yakilan_yag_gram = toplam_yakilan / 7.7
+
+    st.markdown("---")
+    k_m1, k_m2, k_m3 = st.columns(3)
+    k_m1.metric("Yakılan Toplam Kalori", f"{toplam_yakilan:.0f} kcal", "Net Yağ Odaklı")
+    k_m2.metric("Eritilen Saf Yağ", f"~{yakilan_yag_gram:.1f} gram", "Kas Kaybı Yok")
+    k_m3.metric("Kardiyo Şiddeti", "Düşük-Orta Nabız", "Zone 2 (İdeal)")
+
+    if st.button("🔥 Kardiyo Seansını Kaydet", use_container_width=True):
+        kardiyo_kayit = f"[{simdi}] Incline Kardiyo: {sure_dk} dk | Hız: {hiz_kmh} km/s | Eğim: %{egim_yuzde} | Yakılan: {toplam_yakilan:.0f} kcal (~{yakilan_yag_gram:.1f}g yağ)\n"
+        with open("kardiyo_kayitlari.txt", "a", encoding="utf-8") as f:
+            f.write(kardiyo_kayit)
+        st.success("Kardiyo seansı kaydedildi! %10-12 yağ oranına bir adım daha yaklaştın! 💪")
+
+    st.markdown("---")
+    st.subheader("📜 Geçmiş Kardiyo Seansların")
+    try:
+        with open("kardiyo_kayitlari.txt", "r", encoding="utf-8") as f:
+            k_satirlar = f.readlines()
+        if not k_satirlar:
+            st.info("Henüz kardiyo kaydı girilmedi.")
+        else:
+            for ks in k_satirlar:
+                st.text(ks.strip())
+    except FileNotFoundError:
+        st.info("Henüz kardiyo dosyası oluşturulmadı.")
+
+elif menu == "💤 Uyku & Toparlanma (Recovery)":
+    st.subheader("💤 Uyku & Kas Toparlanma (Recovery) Analizi")
+    st.write(
+        "Definasyon döneminde **kas kaybetmemenin** 1 numaralı kuralı iyi toparlanmaktır. Güncel durumunu gir, bugünkü antrenman stratejini belirleyelim!")
+
+    u_col1, u_col2 = st.columns(2)
+    with u_col1:
+        uyku_saat = st.slider("Dün Gece Kaç Saat Uyudun?", 3.0, 11.0, 7.5, 0.5)
+        uyku_kalite = st.selectbox("Uyku Kaliten Nasıldı?",
+                                   ["Çok İyi (Deliksiz)", "Orta (1-2 kez uyandım)", "Kötü (Bölük pörçük)"])
+    with u_col2:
+        kas_agrisi = st.selectbox("Kas Ağrısı (DOMS) Durumu",
+                                  ["Ağrı Yok / Dinç", "Hafif Tatlı Ağrı", "Çok Şiddetli Ağrı / Yorgunluk"])
+        stres_enerji = st.slider("Bugünkü Enerji & Motivasyon Seviyen (1-10)", 1, 10, 8, 1)
+
+    skor = 0
+    if uyku_saat >= 7.5:
+        skor += 45
+    elif uyku_saat >= 6.0:
+        skor += 30
+    else:
+        skor += 15
+
+    if "Çok İyi" in uyku_kalite:
+        skor += 20
+    elif "Orta" in uyku_kalite:
+        skor += 12
+    else:
+        skor += 5
+
+    if "Ağrı Yok" in kas_agrisi:
+        skor += 15
+    elif "Hafif" in kas_agrisi:
+        skor += 10
+    else:
+        skor += 3
+
+    skor += (stres_enerji * 2)
+
+    st.markdown("---")
+    st.metric("⚡ Bugünkü Vücut Toparlanma (Recovery) Skorun", f"{skor} / 100")
+    st.progress(min(skor, 100))
+
+    if skor >= 80:
+        st.success(
+            "🚀 **MÜKEMMEL TOPARLANMA!** Kasların tamamen dinlenmiş ve glikojen depoların hazır. Bugün salonda **PR (Ağırlık Rekoru)** deneyebilir, setleri tükenişe kadar götürebilirsin!")
+        tavsiye = "Tam kapasite ağır antrenman / PR Günü"
+    elif skor >= 55:
+        st.info(
+            "👍 **ORTALAMA TOPARLANMA:** Vücudun iyi durumda ama merkezi sinir sistemini aşırı yıpratma. Bugün **mevcut ağırlıklarını koru**, forma odaklan ve 40 dk eğimli yürüyüşünü aksatma.")
+        tavsiye = "Standart PPL Antrenmanı + Kardiyo"
+    else:
+        st.warning(
+            "⚠️ **DÜŞÜK TOPARLANMA (KORTİZOL RİSKİ):** Uyku azlığı veya yorgunluk var. Definasyonda böyle günlerde çok ağır girmek **kas yıkımına veya sakatlığa** yol açabilir. Bugün ağırlıkları %10-15 düşürüp pump odaklı çalış veya aktif dinlenme yap!")
+        tavsiye = "Hafif Pump Antrenmanı veya Dinlenme"
+
+    if st.button("💤 Toparlanma Durumunu Kaydet", use_container_width=True):
+        rec_kayit = f"[{simdi_tarih}] Uyku: {uyku_saat} saat ({uyku_kalite}) | Recovery Skoru: {skor}/100 | Koç Tavsiyesi: {tavsiye}\n"
+        with open("recovery_kayitlari.txt", "a", encoding="utf-8") as f:
+            f.write(rec_kayit)
+        st.toast("Toparlanma raporu kaydedildi!", icon="💤")
+
+    st.markdown("---")
+    try:
+        with open("recovery_kayitlari.txt", "r", encoding="utf-8") as f:
+            for r_sat in f.readlines():
+                st.text(r_sat.strip())
+    except FileNotFoundError:
+        pass
 
 elif menu == "🗓️ Antrenman & PPL Takvimi":
     st.subheader("🗓️ Haftalık Antrenman ve PPL Takvimi")
@@ -349,6 +587,8 @@ elif menu == "🗓️ Antrenman & PPL Takvimi":
 
 elif menu == "🏋️‍♂️ Ağırlık & PR Takibi":
     st.subheader("🏋️‍♂️ Salonda Bastığın Ağırlıklar & PR Takibi")
+    st.caption(
+        "💡 İpucu: 84 kg'dan 80 kg'a düşerken kaldırdığın ağırlıkları sabit tutmak (veya artırmak) **hiç kas kaybetmediğinin** en büyük kanıtıdır!")
     hareket = st.selectbox("Hareket Seç", [
         "Bench Press / Dumbbell Press",
         "Incline Dumbbell Press",
@@ -435,8 +675,17 @@ elif menu == "📝 Notlar & Hedefler":
 elif menu == "🗑️ Kayıtları Temizle":
     st.subheader("🗑️ Veri Sıfırlama")
     if st.button("Tüm Geçmişi Temizle"):
-        for dosya in ["spor_beslenme_kayitlari.txt", "antrenman_programi.txt", "agirlik_rekorlari.txt",
-                      "supplement_takip.txt", "spor_notlari.txt"]:
+        dosyalar = [
+            "diyet_takvimi_kayitlari.txt",
+            "spor_beslenme_kayitlari.txt",
+            "antrenman_programi.txt",
+            "agirlik_rekorlari.txt",
+            "supplement_takip.txt",
+            "spor_notlari.txt",
+            "kardiyo_kayitlari.txt",
+            "recovery_kayitlari.txt"
+        ]
+        for dosya in dosyalar:
             with open(dosya, "w", encoding="utf-8") as f:
                 pass
         st.success("Tüm veriler sıfırlandı!")
