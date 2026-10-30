@@ -3,8 +3,8 @@ import os
 import time
 import streamlit as st
 
-# Sayfa Ayarları ve Mobil PWA Entegrasyonu
-st.set_page_config(page_title="Enes Spor & Yaşam Paneli", page_icon="💪", layout="centered")
+# Sayfa Ayarları ve Mobil PWA Entegrasyonu (Geniş ekran modu 'wide' ile orta alan boşlukları dengeleniyor)
+st.set_page_config(page_title="Enes Spor & Yaşam Paneli", page_icon="💪", layout="wide")
 
 st.markdown("""
     <link rel="manifest" href="manifest.json">
@@ -120,6 +120,7 @@ with st.sidebar:
     menu = st.selectbox(
         "Gitmek İstediğin Bölüm:",
         [
+            "🏠 Ana Menü (Komuta Merkezi)",
             "📅 30 Günlük Diyet & Takvim",
             "🍳 Sporcu Tarif & Mutfak Defteri",
             "📸 Vücut Dönüşüm & Form Arşivi",
@@ -317,16 +318,60 @@ elif secilen_tema == "⚪ Clean White (Ferah Beyaz)":
         </style>
     """, unsafe_allow_html=True)
 
-# --- ANA EKRAN İÇERİĞİ ---
-
-st.title("💪 Enes Fitness & Yaşam Takip Paneli")
-st.write("84 kg (%16 Yağ) ➡️ 80.5 kg (%11 Yağ) Kas Korumalı Definasyon Merkezi.")
-
 simdi = datetime.now().strftime("%d.%m.%Y %H:%M")
 simdi_tarih = datetime.now().strftime("%d.%m.%Y")
 
+# --- YENİ BÖLÜM: ANA MENÜ (KOMUTA MERKEZİ) ---
+if menu == "🏠 Ana Menü (Komuta Merkezi)":
+    st.title("💪 Enes Fitness & Yaşam Komuta Merkezi")
+    st.write("84 kg (%16 Yağ) ➡️ 80.5 kg (%11 Yağ) Kas Korumalı Definasyon Kampına Hoş Geldin!")
+
+    st.markdown("---")
+    st.subheader("🚀 Hızlı Erişim & Ana Menü")
+    st.caption("Aşağıdaki kartlardan gitmek istediğin bölüme anında geçiş yapabilirsin:")
+
+    # 3'lü kolonlar halinde şık kartlar
+    c1, c2, c3 = st.columns(3)
+
+    with c1:
+        st.markdown("### 📅 30 Günlük Kamp")
+        st.write("Günlük rotasyon menüleri, kalori takibi ve akşam check-in sistemi.")
+        if st.button("Kamp Paneline Git ➡️", use_container_width=True, key="btn_kamp"):
+            st.info("Sol menüden '30 Günlük Diyet & Takvim' seçebilirsin!")
+
+        st.markdown("### 🍳 Tarif & Mutfak")
+        st.write("Profesyonel sporcu tarifleri ve kendi defterine not ettiklerin.")
+        if st.button("Tariflere Git ➡️", use_container_width=True, key="btn_tarif"):
+            st.info("Sol menüden 'Sporcu Tarif & Mutfak Defteri' seçebilirsin!")
+
+    with c2:
+        st.markdown("### 📸 Form Arşivi")
+        st.write("Haftalık form fotoğraflarını yükle, kilo ve yağ değişimini incele.")
+        if st.button("Arşive Git ➡️", use_container_width=True, key="btn_arsiv"):
+            st.info("Sol menüden 'Vücut Dönüşüm & Form Arşivi' seçebilirsin!")
+
+        st.markdown("### 🤖 AI Kalori Asistanı")
+        st.write("Yediğin öğünleri yaz, kalori ve protein değerini anında hesaplasın.")
+        if st.button("AI Asistana Git ➡️", use_container_width=True, key="btn_ai"):
+            st.info("Sol menüden 'AI Kalori & Beslenme' seçebilirsin!")
+
+    with c3:
+        st.markdown("### 🔥 Kardiyo & Yağ Yakım")
+        st.write("Eğimli yürüyüşte (Incline Treadmill) yaktığın saf yağı hesapla.")
+        if st.button("Kardiyoya Git ➡️", use_container_width=True, key="btn_kardiyo"):
+            st.info("Sol menüden 'Kardiyo & Yağ Yakım Hesaplayıcı' seçebilirsin!")
+
+        st.markdown("### 🏋️‍♂️ Ağırlık & PR Takibi")
+        st.write("Salonda bastığın ağırlıkları, ön/arka kol rekorlarını kaydet.")
+        if st.button("PR Takibine Git ➡️", use_container_width=True, key="btn_pr"):
+            st.info("Sol menüden 'Ağırlık & PR Takibi' seçebilirsin!")
+
+    st.markdown("---")
+    st.info(
+        "💡 **Günün Motivasyon İpucu:** *“Ağrıyı hissedemeyenler asla kazanamaz. 80.5 kiloya ve %11 yağ oranına ulaşana kadar durmak yok!”* 🔥")
+
 # --- 1. BÖLÜM: 30 GÜNLÜK DİYET & KAMP TAKVİMİ ---
-if menu == "📅 30 Günlük Diyet & Takvim":
+elif menu == "📅 30 Günlük Diyet & Takvim":
     st.subheader("📅 30 Günlük Kas Korumalı Definasyon Kampı")
     st.write(
         "Her gün aynı şeyi yemekten sıkılmaman için senin sevdiğin besinlerle hazırlanmış **3 farklı rotasyon menüsü**. Gününü seç, menünü gör ve akşam uyup uymadığını işaretle!")
@@ -425,7 +470,7 @@ if menu == "📅 30 Günlük Diyet & Takvim":
             else:
                 st.error(k_gun.strip())
 
-# --- YENİ BÖLÜM: SPORCU TARİF & MUTFAK DEFTERİ ---
+# --- 2. BÖLÜM: SPORCU TARİF & MUTFAK DEFTERİ ---
 elif menu == "🍳 Sporcu Tarif & Mutfak Defteri":
     st.subheader("🍳 Sporcu Mutfak Defteri & AI Tarif Kataloğu")
     st.write(
@@ -553,7 +598,7 @@ elif menu == "🍳 Sporcu Tarif & Mutfak Defteri":
         except Exception as e:
             st.info("Kayıtlar okunurken hata oluştu.")
 
-# --- 4. BÖLÜM: VÜCUT DÖNÜŞÜM & FORM ARŞİVİ ---
+# --- 3. BÖLÜM: VÜCUT DÖNÜŞÜM & FORM ARŞİVİ ---
 elif menu == "📸 Vücut Dönüşüm & Form Arşivi":
     st.subheader("📸 Vücut Dönüşüm & Form Fotoğraf Arşivi")
     st.write(
@@ -618,7 +663,7 @@ elif menu == "📸 Vücut Dönüşüm & Form Arşivi":
     except Exception as e:
         st.warning("Arşiv yüklenirken bilgi okunamadı.")
 
-# --- 5. BÖLÜM: AI KALORİ & BESLENME ASİSTANI ---
+# --- 4. BÖLÜM: AI KALORİ & BESLENME ASİSTANI ---
 elif menu == "🤖 AI Kalori & Beslenme":
     st.subheader("🤖 Akıllı Besin & Kalori Hesaplayıcı Robot")
 
@@ -770,6 +815,7 @@ elif menu == "🤖 AI Kalori & Beslenme":
     except FileNotFoundError:
         st.info("Henüz kayıt dosyası yok.")
 
+# --- 5. BÖLÜM: KARDİYO & YAĞ YAKIM ---
 elif menu == "🔥 Kardiyo & Yağ Yakım Hesaplayıcı":
     st.subheader("🔥 Eğimli Yürüyüş (Incline Treadmill) Kalori & Yağ Yakım Hesaplayıcı")
     st.write(
@@ -817,6 +863,7 @@ elif menu == "🔥 Kardiyo & Yağ Yakım Hesaplayıcı":
     except FileNotFoundError:
         st.info("Henüz kardiyo dosyası oluşturulmadı.")
 
+# --- 6. BÖLÜM: UYKU & TOPARLANMA ---
 elif menu == "💤 Uyku & Toparlanma (Recovery)":
     st.subheader("💤 Uyku & Kas Toparlanma (Recovery) Analizi")
     st.write(
@@ -887,6 +934,7 @@ elif menu == "💤 Uyku & Toparlanma (Recovery)":
     except FileNotFoundError:
         pass
 
+# --- 7. BÖLÜM: ANTRENMAN & PPL TAKVİMİ ---
 elif menu == "🗓️ Antrenman & PPL Takvimi":
     st.subheader("🗓️ Haftalık Antrenman ve PPL Takvimi")
     secilen_gun = st.selectbox("Gün Seç", ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"])
@@ -914,6 +962,7 @@ elif menu == "🗓️ Antrenman & PPL Takvimi":
     except FileNotFoundError:
         st.info("Henüz antrenman kaydı yok.")
 
+# --- 8. BÖLÜM: AĞIRLIK & PR TAKİBİ ---
 elif menu == "🏋️‍♂️ Ağırlık & PR Takibi":
     st.subheader("🏋️‍♂️ Salonda Bastığın Ağırlıklar & PR Takibi")
     st.caption(
@@ -1006,6 +1055,7 @@ elif menu == "🏋️‍♂️ Ağırlık & PR Takibi":
     except FileNotFoundError:
         st.info("Henüz kayıt dosyası oluşturulmadı.")
 
+# --- 9. BÖLÜM: SUPPLEMENT & SU ---
 elif menu == "💧 Supplement & Su":
     st.subheader("💧 Su ve Supplement Takibi")
     su_miktari = st.slider("Bugün içtiğin toplam su (Litre)", 0.0, 6.0, 3.5, 0.5)
@@ -1035,6 +1085,7 @@ elif menu == "💧 Supplement & Su":
     except FileNotFoundError:
         pass
 
+# --- 10. BÖLÜM: NOTLAR & HEDEFLER ---
 elif menu == "📝 Notlar & Hedefler":
     st.subheader("📝 Koçluk Notları ve Hedefler")
     yeni_not = st.text_area("Notunu veya yeni tarif fikirlerini yaz:")
@@ -1049,6 +1100,7 @@ elif menu == "📝 Notlar & Hedefler":
     except FileNotFoundError:
         pass
 
+# --- 11. BÖLÜM: KAYITLARI TEMİZLE ---
 elif menu == "🗑️ Kayıtları Temizle":
     st.subheader("🗑️ Veri Sıfırlama")
     if st.button("Tüm Geçmişi Temizle"):
