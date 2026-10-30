@@ -11,6 +11,16 @@ st.markdown("""
     <meta name="theme-color" content="#0a0f0d">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <style>
+        /* Ortadaki ana menü kutularını (st.container border=True) belirgin koyu renk yapma */
+        div[data-testid="stVerticalBlock"] div[data-testid="stVerticalBlock"] div[data-testid="stContainer"] {
+            background-color: #161b22 !important;
+            border: 1px solid #30363d !important;
+            border-radius: 12px !important;
+            padding: 15px !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+        }
+    </style>
 """, unsafe_allow_html=True)
 
 # --- KULLANICI GİRİŞ SİSTEMİ ---
@@ -321,7 +331,7 @@ elif secilen_tema == "⚪ Clean White (Ferah Beyaz)":
 simdi = datetime.now().strftime("%d.%m.%Y %H:%M")
 simdi_tarih = datetime.now().strftime("%d.%m.%Y")
 
-# --- YENİ BÖLÜM: ANA MENÜ (KUTU TASARIMLI KOMUTA MERKEZİ) ---
+# --- ANA MENÜ ---
 if menu == "🏠 Ana Menü (Komuta Merkezi)":
     st.title("💪 Enes Fitness & Yaşam Komuta Merkezi")
     st.write("84 kg (%16 Yağ) ➡️ 80.5 kg (%11 Yağ) Kas Korumalı Definasyon Kampına Hoş Geldin!")
@@ -330,7 +340,6 @@ if menu == "🏠 Ana Menü (Komuta Merkezi)":
     st.subheader("🚀 Hızlı Erişim & Ana Menü")
     st.caption("Aşağıdaki şık kutulardan gitmek istediğin bölüme anında göz atabilirsin:")
 
-    # 3'lü kolonlar halinde kartlar
     c1, c2, c3 = st.columns(3)
 
     with c1:
