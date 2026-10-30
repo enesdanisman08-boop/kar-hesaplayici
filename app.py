@@ -13,35 +13,68 @@ st.markdown("""
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 """, unsafe_allow_html=True)
 
-# --- KULLANICI GİRİŞ SİSTEMİ ---
+# --- KULLANICI GİRİŞ SİSTEMİ (ÖZELLEŞTİRİLMİŞ) ---
 if "giris_yapildi" not in st.session_state:
     st.session_state["giris_yapildi"] = False
 
-# Varsayılan temayı doğrudan Standart Koyu olarak sabitliyoruz
 if "secilen_tema" not in st.session_state:
     st.session_state["secilen_tema"] = "⚫ Standart Koyu"
 
 ICERDEKILER = {
     "enes": "1453",
-    "emirhan": "1903"
+    "admin": "admin"
 }
 
 if not st.session_state["giris_yapildi"]:
-    st.title("🔒 Spor Paneli Giriş Ekranı")
-    st.write("Devam etmek için şifreni gir knk.")
+    # Özel Giriş Ekranı Tasarımı için CSS
+    st.markdown("""
+        <style>
+        .login-container {
+            background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+            border: 2px solid #4f46e5;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(79, 70, 229, 0.25);
+            text-align: center;
+            max-width: 450px;
+            margin: 40px auto;
+        }
+        .login-title {
+            color: #ffffff;
+            font-size: 26px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .login-subtitle {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        </style>
 
-    with st.form("giris_formu"):
-        k_adi = st.text_input("Kullanıcı Adı").strip().lower()
-        sifre = st.text_input("Parola", type="password")
-        buton = st.form_submit_button("Giriş Yap")
+        <div class="login-container">
+            <div class="login-title">🔥 ENES FITNESS MERKEZİ</div>
+            <div class="login-subtitle">84 kg ➡️ 80.5 kg Kas Korumalı Definasyon Kampı</div>
+        </div>
+    """, unsafe_allow_html=True)
 
-        if buton:
-            if k_adi in ICERDEKILER and ICERDEKILER[k_adi] == sifre:
-                st.session_state["giris_yapildi"] = True
-                st.success("Giriş başarılı, demirleri kaldırmaya hazır ol! 💪")
-                st.rerun()
-            else:
-                st.error("❌ Hatalı kullanıcı adı veya parola!")
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        with st.form("giris_formu"):
+            st.markdown("### 🔐 Güvenli Giriş")
+            k_adi = st.text_input("Kullanıcı Adı").strip().lower()
+            sifre = st.text_input("Parola", type="password")
+            buton = st.form_submit_button("🚀 Panele Giriş Yap", use_container_width=True)
+
+            if buton:
+                if k_adi in ICERDEKILER and ICERDEKILER[k_adi] == sifre:
+                    st.session_state["giris_yapildi"] = True
+                    st.success("Giriş başarılı, demirleri kaldırmaya hazır ol! 💪")
+                    st.rerun()
+                else:
+                    st.error("❌ Hatalı kullanıcı adı veya parola!")
+
+        st.info("💡 **Hedef Hatırlatması:** Günlük 2250 kcal | 185g+ Protein | 4L Su")
 
     st.stop()
 
