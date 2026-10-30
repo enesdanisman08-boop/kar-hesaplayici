@@ -17,9 +17,9 @@ st.markdown("""
 if "giris_yapildi" not in st.session_state:
     st.session_state["giris_yapildi"] = False
 
-# Oturumda tema hafızası yoksa varsayılan yeşil yapalım
+# Varsayılan temayı doğrudan Standart Koyu olarak sabitliyoruz
 if "secilen_tema" not in st.session_state:
-    st.session_state["secilen_tema"] = "🟢 Neon Gym (Siyah & Yeşil)"
+    st.session_state["secilen_tema"] = "⚫ Standart Koyu"
 
 ICERDEKILER = {
     "enes": "1453",
@@ -49,24 +49,23 @@ if not st.session_state["giris_yapildi"]:
 
 with st.sidebar:
     with st.expander("🎨 Tema & Renk Ayarları"):
-        # Seçilen temayı session_state'e bağlıyoruz ki her yenilemede sıfırlanmasın
         st.session_state["secilen_tema"] = st.selectbox(
             "Tema Seç:",
             [
+                "⚫ Standart Koyu",
                 "🟢 Neon Gym (Siyah & Yeşil)",
                 "🔴 Cyber Red (Agresif Kırmızı)",
                 "💎 Cyberpunk Mor",
                 "🔥 Sunset Turuncu",
-                "⚪ Clean White (Ferah Beyaz)",
-                "⚫ Standart Koyu"
+                "⚪ Clean White (Ferah Beyaz)"
             ],
             index=[
+                "⚫ Standart Koyu",
                 "🟢 Neon Gym (Siyah & Yeşil)",
                 "🔴 Cyber Red (Agresif Kırmızı)",
                 "💎 Cyberpunk Mor",
                 "🔥 Sunset Turuncu",
-                "⚪ Clean White (Ferah Beyaz)",
-                "⚫ Standart Koyu"
+                "⚪ Clean White (Ferah Beyaz)"
             ].index(st.session_state["secilen_tema"])
         )
 
@@ -130,7 +129,30 @@ with st.sidebar:
 
 # --- ÖZEL CSS TEMA KODLARI ---
 
-if secilen_tema == "🟢 Neon Gym (Siyah & Yeşil)":
+if secilen_tema == "⚫ Standart Koyu":
+    st.markdown("""
+        <style>
+        .stApp {
+            background-color: #0e1117;
+            color: #fafafa;
+        }
+        div[data-testid="stMetric"] {
+            background-color: #262730;
+            border: 1px solid #4f46e5;
+            padding: 12px;
+            border-radius: 10px;
+        }
+        .stButton>button {
+            background-color: #4f46e5 !important;
+            color: #ffffff !important;
+            font-weight: bold !important;
+            border-radius: 8px !important;
+            border: none !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+elif secilen_tema == "🟢 Neon Gym (Siyah & Yeşil)":
     st.markdown("""
         <style>
         .stApp {
