@@ -34,12 +34,10 @@ if not st.session_state["giris_yapildi"]:
             else:
                 st.error("❌ Hatalı kullanıcı adı veya parola!")
 
-    # Giriş yapılmadıysa kodun devamını çalıştırma
     st.stop()
 
 # --- GİRİŞ YAPILDIKTAN SONRAKİ ASIL UYGULAMA ---
 
-# Kenar çubuğuna çıkış butonu ekleyelim
 if st.sidebar.button("🚪 Çıkış Yap"):
     st.session_state["giris_yapildi"] = False
     st.rerun()
@@ -69,54 +67,54 @@ if menu == "Yeni Cihaz Hesapla":
 
         st.markdown("---")
         st.subheader("📊 Analiz Sonucu")
-...
-m_col1, m_col2, m_col3 = st.columns(3)
-m_col1.metric("Toplam Maliyet", f"{toplam_maliyet:,.0f} TL")
-m_col2.metric("Hedef Satış", f"{satis_fiyati:,.0f} TL")
-m_col3.metric("Net Kâr", f"{net_kar:,.0f} TL", delta=f"%{kar_orani:.1f}")
 
-if net_kar <= 0:
-    st.error("⚠️ DİKKAT: Bu işlemden zarar ediyorsun veya kârın yok!")
-elif kar_orani < 15:
-    st.warning(f"💡 BİLGİ: Kâr marjı biraz düşük (%{kar_orani:.1f}). Emeğine değmeyebilir.")
-else:
-    st.success("✅ HARİKA: Çok güzel ticaret, bu cihaz alınıp toplanır!")
+        m_col1, m_col2, m_col3 = st.columns(3)
+        m_col1.metric("Toplam Maliyet", f"{toplam_maliyet:,.0f} TL")
+        m_col2.metric("Hedef Satış", f"{satis_fiyati:,.0f} TL")
+        m_col3.metric("Net Kâr", f"{net_kar:,.0f} TL", delta=f"%{kar_orani:.1f}")
 
-simdi = datetime.now().strftime("%d.%m.%Y %H:%M")
-with open("ticaret_kayitlari.txt", "a", encoding="utf-8") as dosya:
-    dosya.write(
-        f"[{simdi}] Cihaz: {cihaz_modeli.upper()} | Maliyet: {toplam_maliyet:.0f} TL | Satış: {satis_fiyati:.0f} TL | Net Kâr: {net_kar:.0f} TL (%{kar_orani:.1f})\n")
+        if net_kar <= 0:
+            st.error("⚠️ DİKKAT: Bu işlemden zarar ediyorsun veya kârın yok!")
+        elif kar_orani < 15:
+            st.warning(f"💡 BİLGİ: Kâr marjı biraz düşük (%{kar_orani:.1f}). Emeğine değmeyebilir.")
+        else:
+            st.success("✅ HARİKA: Çok güzel ticaret, bu cihaz alınıp toplanır!")
 
-st.toast("Başarıyla 'ticaret_kayitlari.txt' dosyasına kaydedildi!", icon="📁")
+        simdi = datetime.now().strftime("%d.%m.%Y %H:%M")
+        with open("ticaret_kayitlari.txt", "a", encoding="utf-8") as dosya:
+            dosya.write(
+                f"[{simdi}] Cihaz: {cihaz_modeli.upper()} | Maliyet: {toplam_maliyet:.0f} TL | Satış: {satis_fiyati:.0f} TL | Net Kâr: {net_kar:.0f} TL (%{kar_orani:.1f})\n")
+
+        st.toast("Başarıyla 'ticaret_kayitlari.txt' dosyasına kaydedildi!", icon="📁")
 
 elif menu == "Geçmiş Kayıtlar & Özet":
-st.subheader("📜 Geçmiş Ticaret Kayıtları")
+    st.subheader("📜 Geçmiş Ticaret Kayıtları")
 
-try:
-    with open("ticaret_kayitlari.txt", "r", encoding="utf-8") as dosya:
-        satirlar = dosya.readlines()
+    try:
+        with open("ticaret_kayitlari.txt", "r", encoding="utf-8") as dosya:
+            satirlar = dosya.readlines()
 
-    if len(satirlar) == 0:
-        st.info("Henüz hiç kayıt bulunmuyor.")
-    else:
-        toplam_genel_kar = 0
-        for satir in satirlar:
-            st.text(satir.strip())
-            if "Net Kâr: " in satir:
-                kar_kismi = satir.split("Net Kâr: ")[1].split(" TL")[0]
-                toplam_genel_kar += float(kar_kismi)
+        if len(satirlar) == 0:
+            st.info("Henüz hiç kayıt bulunmuyor.")
+        else:
+            toplam_genel_kar = 0
+            for satir in satirlar:
+                st.text(satir.strip())
+                if "Net Kâr: " in satir:
+                    kar_kismi = satir.split("Net Kâr: ")[1].split(" TL")[0]
+                    toplam_genel_kar += float(kar_kismi)
 
-        st.markdown("---")
-        col_a, col_b = st.columns(2)
-        col_a.metric("Toplam Cihaz", f"{len(satirlar)} Adet")
-        col_b.metric("Toplam Net Kâr", f"{toplam_genel_kar:,.0f} TL")
+            st.markdown("---")
+            col_a, col_b = st.columns(2)
+            col_a.metric("Toplam Cihaz", f"{len(satirlar)} Adet")
+            col_b.metric("Toplam Net Kâr", f"{toplam_genel_kar:,.0f} TL")
 
-except FileNotFoundError:
-    st.warning("Henüz kayıt dosyası oluşturulmamış. 'Yeni Cihaz Hesapla' sekmesinden kayıt ekleyebilirsin.")
+    except FileNotFoundError:
+        st.warning("Henüz kayıt dosyası oluşturulmamış. 'Yeni Cihaz Hesapla' sekmesinden kayıt ekleyebilirsin.")
 
 elif menu == "Kayıtları Temizle":
-st.subheader("🗑️ Kayıt Yönetimi")
-if st.button("Tüm Geçmiş Kayıtları Sil"):
-    with open("ticaret_kayitlari.txt", "w", encoding="utf-8") as dosya:
-        pass
-    st.success("Tüm geçmiş kayıtlar temizlendi!")
+    st.subheader("🗑️ Kayıt Yönetimi")
+    if st.button("Tüm Geçmiş Kayıtları Sil"):
+        with open("ticaret_kayitlari.txt", "w", encoding="utf-8") as dosya:
+            pass
+        st.success("Tüm geçmiş kayıtlar temizlendi!")
