@@ -33,36 +33,12 @@ if not st.session_state["giris_yapildi"]:
 
     st.stop()
 
-# --- SOL MENÜ (SIDEBAR) & TEMA SEÇİCİ ---
+# --- SOL MENÜ (SIDEBAR) & TEMİZ DÜZEN ---
 
 with st.sidebar:
-    st.markdown("## 🎨 Görünüm & Tema")
-    secilen_tema = st.selectbox(
-        "Tema Seç:",
-        ["🟢 Neon Gym (Siyah & Yeşil)", "🔴 Cyber Red (Agresif Kırmızı)", "⚪ Clean White (Ferah Beyaz)",
-         "⚫ Standart Koyu"]
-    )
-
-    st.markdown("---")
-    st.markdown("## 🏆 Sporcu Profili")
-    st.info(
-        "**Sporcu:** Enes (178 cm)\n\n"
-        "**Sistem:** 5 Gün PPL + Incline Kardiyo\n\n"
-        "**Strateji:** Kas Korumalı Definasyon 🔥\n\n"
-        "**Hedef:** 80-81 kg | %10-12 Yağ Oranı"
-    )
-
-    col_s1, col_s2 = st.columns(2)
-    col_s1.metric("Güncel Kilo", "84.0 kg", "Hedef: 80.5 kg")
-    col_s2.metric("Yağ Oranı", "%16.0", "Hedef: %11")
-
-    st.caption("🎯 Kas Kayıpsız Definasyon Hedefi:\nGünlük **2250 kcal** | **185g+ Protein**")
-
-    st.markdown("---")
-
-    st.markdown("### 🧭 Navigasyon")
-    menu = st.radio(
-        "Bölüm Seç:",
+    st.markdown("## 🧭 Navigasyon")
+    menu = st.selectbox(
+        "Gitmek İstediğin Bölüm:",
         [
             "📅 30 Günlük Diyet & Takvim",
             "🤖 AI Kalori & Beslenme",
@@ -78,25 +54,48 @@ with st.sidebar:
 
     st.markdown("---")
 
-    # Set Arası Dinlenme Sayacı
-    with st.expander("⏱️ Set Arası Dinlenme Sayacı"):
-        sure = st.selectbox("Süre Seç:", [60, 90, 120, 180], format_func=lambda x: f"{x} Saniye")
+    st.markdown("## 🎨 Tema Seçimi")
+    secilen_tema = st.selectbox(
+        "Görünüm:",
+        ["🟢 Neon Gym (Siyah & Yeşil)", "🔴 Cyber Red (Agresif Kırmızı)", "⚪ Clean White (Ferah Beyaz)",
+         "⚫ Standart Koyu"],
+        label_visibility="collapsed"
+    )
+
+    st.markdown("---")
+
+    # Sporcu Profili Özet Kartı
+    st.markdown("## 🏆 Sporcu Özeti")
+    st.info(
+        "👤 **Enes** (178 cm | 84 kg)\n\n"
+        "🎯 **Hedef:** 80-81 kg (%11 Yağ)\n\n"
+        "🔥 **Günlük Hedef:** 2250 kcal | 185g+ Protein"
+    )
+
+    col_s1, col_s2 = st.columns(2)
+    col_s1.metric("Kilo", "84.0 kg", "Hedef: 80.5")
+    col_s2.metric("Yağ", "%16.0", "Hedef: %11")
+
+    st.markdown("---")
+
+    # Pratik Araçlar (Açılır Kapanır Temiz Alan)
+    with st.expander("⏱️ Set Arası Dinlenme"):
+        sure = st.selectbox("Süre Seç:", [60, 90, 120, 180], format_func=lambda x: f"{x} Saniye", key="dinlenme_sure")
         if st.button("▶️ Sayacı Başlat", use_container_width=True):
             bar = st.progress(0)
             durum_yazisi = st.empty()
             for i in range(sure):
                 kalan = sure - i
-                durum_yazisi.markdown(f"⏳ Kalan Süre: **{kalan} sn**")
+                durum_yazisi.markdown(f"⏳ Kalan: **{kalan} sn**")
                 bar.progress((i + 1) / sure)
                 time.sleep(1)
-            durum_yazisi.success("🔔 Süre Bitti! Sıradaki sete geç knk! 💪")
+            durum_yazisi.success("🔔 Süre Bitti! Sete devam 💪")
 
-    # Hızlı 1RM Hesaplayıcı
-    with st.expander("⚡ Hızlı 1RM (Max Ağırlık) Hesapla"):
-        kilo_1rm = st.number_input("Kaldırılan Ağırlık (kg)", min_value=1.0, value=80.0, step=2.5)
-        tekrar_1rm = st.number_input("Tekrar Sayısı", min_value=1, max_value=30, value=8, step=1)
+    with st.expander("⚡ Hızlı 1RM (Max) Hesapla"):
+        kilo_1rm = st.number_input("Ağırlık (kg)", min_value=1.0, value=80.0, step=2.5, key="rm_kilo")
+        tekrar_1rm = st.number_input("Tekrar", min_value=1, max_value=30, value=8, step=1, key="rm_tekrar")
         max_agirlik = kilo_1rm * (1 + tekrar_1rm / 30.0)
-        st.success(f"🔥 Tahmini 1RM: **{max_agirlik:.1f} kg**")
+        st.success(f"🔥 Tahmini Max: **{max_agirlik:.1f} kg**")
 
     st.markdown("---")
     if st.button("🚪 Çıkış Yap", use_container_width=True):
@@ -115,9 +114,9 @@ if secilen_tema == "🟢 Neon Gym (Siyah & Yeşil)":
         div[data-testid="stMetric"] {
             background-color: #16241d;
             border: 1px solid #00ff88;
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
+            padding: 12px;
+            border-radius: 10px;
+            box-shadow: 0 0 8px rgba(0, 255, 136, 0.15);
         }
         .stButton>button {
             background-color: #00ff88 !important;
@@ -139,9 +138,9 @@ elif secilen_tema == "🔴 Cyber Red (Agresif Kırmızı)":
         div[data-testid="stMetric"] {
             background-color: #290f0f;
             border: 1px solid #ff2a2a;
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 0 12px rgba(255, 42, 42, 0.25);
+            padding: 12px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 42, 42, 0.2);
         }
         .stButton>button {
             background-color: #ff2a2a !important;
@@ -163,8 +162,8 @@ elif secilen_tema == "⚪ Clean White (Ferah Beyaz)":
         div[data-testid="stMetric"] {
             background-color: #ffffff;
             border: 2px solid #007bff;
-            padding: 15px;
-            border-radius: 12px;
+            padding: 12px;
+            border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
         }
         .stButton>button {
@@ -581,7 +580,6 @@ elif menu == "🗓️ Antrenman & PPL Takvimi":
     except FileNotFoundError:
         st.info("Henüz antrenman kaydı yok.")
 
-# --- 6. BÖLÜM: DETAYLI AĞIRLIK & PR TAKİBİ (BÖLGE BÖLGE TÜM HAREKETLER) ---
 elif menu == "🏋️‍♂️ Ağırlık & PR Takibi":
     st.subheader("🏋️‍♂️ Salonda Bastığın Ağırlıklar & PR Takibi")
     st.caption(
@@ -686,7 +684,7 @@ elif menu == "🏋️‍♂️ Ağırlık & PR Takibi":
     with col_p3:
         tekrar_sayisi = st.number_input("Tekrar Sayısı", min_value=1, value=10, step=1)
 
-    pr_notu = st.text_input("Set Notu (İsteğe bağlı - Örn: Son set drop yapıldı, pump efsaneydi)")
+    pr_notu = st.text_input("Set Notu (İsteğe bağlı - Örn: Son set drop yapıldı)")
 
     if st.button("🔥 Ağırlık Rekorunu Kaydet", use_container_width=True):
         not_kismi = f" | Not: {pr_notu}" if pr_notu else ""
@@ -698,9 +696,7 @@ elif menu == "🏋️‍♂️ Ağırlık & PR Takibi":
     st.markdown("---")
     st.subheader("📈 Kayıtlı Ağırlık Geçmişin")
 
-    # Geçmiş kayıtlarda bölgeye veya harekete göre filtreleme
-    pr_filtre = st.text_input(
-        "🔍 Kayıtlarda Hareket veya Bölge Ara (Örn: Curl, Pushdown, Ön Kol, Göğüs):").strip().lower()
+    pr_filtre = st.text_input("🔍 Kayıtlarda Hareket veya Bölge Ara:").strip().lower()
 
     try:
         with open("agirlik_rekorlari.txt", "r", encoding="utf-8") as f:
