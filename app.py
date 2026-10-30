@@ -6,23 +6,6 @@ import streamlit as st
 # Sayfa Ayarları ve Mobil PWA Entegrasyonu
 st.set_page_config(page_title="Enes Spor & Yaşam Paneli", page_icon="💪", layout="wide")
 
-st.markdown("""
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0a0f0d">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <style>
-        /* Ortadaki ana menü kutularını belirgin koyu renk yapma */
-        div[data-testid="stVerticalBlock"] div[data-testid="stVerticalBlock"] div[data-testid="stContainer"] {
-            background-color: #161b22 !important;
-            border: 1px solid #30363d !important;
-            border-radius: 12px !important;
-            padding: 15px !important;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
-        }
-    </style>
-""", unsafe_allow_html=True)
-
 # --- KULLANICI GİRİŞ SİSTEMİ ---
 if "giris_yapildi" not in st.session_state:
     st.session_state["giris_yapildi"] = False
@@ -159,7 +142,7 @@ with st.sidebar:
         st.session_state["giris_yapildi"] = False
         st.rerun()
 
-# --- SAĞ ÜST KÖŞE GÖRÜNÜM KONTROLÜ (Koyu - Açık - PC Teması) ---
+# --- SAĞ ÜST KÖŞE GÖRÜNÜM KONTROLÜ ---
 top_col1, top_col2 = st.columns([6, 2])
 with top_col2:
     st.session_state["secilen_tema"] = st.selectbox(
@@ -170,27 +153,20 @@ with top_col2:
 
 secilen_tema = st.session_state["secilen_tema"]
 
-# --- ÖZEL CSS TEMA KODLARI ---
+# --- DİNAMİK TEMA VE KUTU STİLLERİ ---
 
 if secilen_tema == "🌙 Koyu Mod":
     st.markdown("""
         <style>
-        .stApp {
-            background-color: #0e1117;
-            color: #fafafa;
-        }
-        div[data-testid="stMetric"] {
-            background-color: #262730;
-            border: 1px solid #4f46e5;
-            padding: 12px;
-            border-radius: 10px;
-        }
-        .stButton>button {
-            background-color: #4f46e5 !important;
-            color: #ffffff !important;
-            font-weight: bold !important;
-            border-radius: 8px !important;
-            border: none !important;
+        .stApp { background-color: #0e1117; color: #fafafa; }
+        div[data-testid="stMetric"] { background-color: #262730; border: 1px solid #4f46e5; padding: 12px; border-radius: 10px; }
+        .stButton>button { background-color: #4f46e5 !important; color: #ffffff !important; font-weight: bold !important; border-radius: 8px !important; border: none !important; }
+        div[data-testid="stVerticalBlock"] div[data-testid="stVerticalBlock"] div[data-testid="stContainer"] {
+            background-color: #161b22 !important;
+            border: 1px solid #30363d !important;
+            border-radius: 12px !important;
+            padding: 15px !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
         }
         </style>
     """, unsafe_allow_html=True)
@@ -198,26 +174,15 @@ if secilen_tema == "🌙 Koyu Mod":
 elif secilen_tema == "☀️ Açık Mod":
     st.markdown("""
         <style>
-        .stApp {
-            background-color: #f8fafc;
-            color: #0f172a;
-        }
-        div[data-testid="stMetric"] {
-            background-color: #ffffff;
-            border: 1px solid #cbd5e1;
-            padding: 12px;
-            border-radius: 10px;
-        }
-        .stButton>button {
-            background-color: #0284c7 !important;
-            color: #ffffff !important;
-            font-weight: bold !important;
-            border-radius: 8px !important;
-            border: none !important;
-        }
-        div[data-testid="stContainer"] {
+        .stApp { background-color: #f8fafc; color: #0f172a; }
+        div[data-testid="stMetric"] { background-color: #ffffff; border: 1px solid #cbd5e1; padding: 12px; border-radius: 10px; }
+        .stButton>button { background-color: #0284c7 !important; color: #ffffff !important; font-weight: bold !important; border-radius: 8px !important; border: none !important; }
+        div[data-testid="stVerticalBlock"] div[data-testid="stVerticalBlock"] div[data-testid="stContainer"] {
             background-color: #ffffff !important;
-            border: 1px solid #e2e8f0 !important;
+            border: 1px solid #cbd5e1 !important;
+            border-radius: 12px !important;
+            padding: 15px !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
         }
         </style>
     """, unsafe_allow_html=True)
@@ -225,23 +190,15 @@ elif secilen_tema == "☀️ Açık Mod":
 elif secilen_tema == "💻 PC Teması (Neon Yeşil)":
     st.markdown("""
         <style>
-        .stApp {
-            background: linear-gradient(135deg, #0a0f0d 0%, #111a16 100%);
-            color: #e0f2e9;
-        }
-        div[data-testid="stMetric"] {
-            background-color: #16241d;
-            border: 1px solid #00ff88;
-            padding: 12px;
-            border-radius: 10px;
-            box-shadow: 0 0 8px rgba(0, 255, 136, 0.15);
-        }
-        .stButton>button {
-            background-color: #00ff88 !important;
-            color: #05140c !important;
-            font-weight: bold !important;
-            border-radius: 8px !important;
-            border: none !important;
+        .stApp { background: linear-gradient(135deg, #0a0f0d 0%, #111a16 100%); color: #e0f2e9; }
+        div[data-testid="stMetric"] { background-color: #16241d; border: 1px solid #00ff88; padding: 12px; border-radius: 10px; box-shadow: 0 0 8px rgba(0, 255, 136, 0.15); }
+        .stButton>button { background-color: #00ff88 !important; color: #05140c !important; font-weight: bold !important; border-radius: 8px !important; border: none !important; }
+        div[data-testid="stVerticalBlock"] div[data-testid="stVerticalBlock"] div[data-testid="stContainer"] {
+            background-color: #16241d !important;
+            border: 1px solid #00ff88 !important;
+            border-radius: 12px !important;
+            padding: 15px !important;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.15) !important;
         }
         </style>
     """, unsafe_allow_html=True)
