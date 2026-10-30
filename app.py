@@ -33,9 +33,24 @@ if not st.session_state["giris_yapildi"]:
 
     st.stop()
 
-# --- SOL MENÜ (SIDEBAR) & TEMİZ DÜZEN ---
+# --- SOL MENÜ (SIDEBAR) & KOMPAKT DÜZEN ---
 
 with st.sidebar:
+    # Kompakt Tema Seçici (Açılır Kapanır Expander ile yer kaplamaz)
+    with st.expander("🎨 Tema & Renk Ayarları"):
+        secilen_tema = st.selectbox(
+            "Tema Seç:",
+            [
+                "🟢 Neon Gym (Siyah & Yeşil)",
+                "🔴 Cyber Red (Agresif Kırmızı)",
+                "💎 Cyberpunk Mor",
+                "🔥 Sunset Turuncu",
+                "⚪ Clean White (Ferah Beyaz)",
+                "⚫ Standart Koyu"
+            ]
+        )
+
+    st.markdown("---")
     st.markdown("## 🧭 Navigasyon")
     menu = st.selectbox(
         "Gitmek İstediğin Bölüm:",
@@ -54,16 +69,6 @@ with st.sidebar:
 
     st.markdown("---")
 
-    st.markdown("## 🎨 Tema Seçimi")
-    secilen_tema = st.selectbox(
-        "Görünüm:",
-        ["🟢 Neon Gym (Siyah & Yeşil)", "🔴 Cyber Red (Agresif Kırmızı)", "⚪ Clean White (Ferah Beyaz)",
-         "⚫ Standart Koyu"],
-        label_visibility="collapsed"
-    )
-
-    st.markdown("---")
-
     # Sporcu Profili Özet Kartı
     st.markdown("## 🏆 Sporcu Özeti")
     st.info(
@@ -78,7 +83,7 @@ with st.sidebar:
 
     st.markdown("---")
 
-    # Pratik Araçlar (Açılır Kapanır Temiz Alan)
+    # Pratik Araçlar
     with st.expander("⏱️ Set Arası Dinlenme"):
         sure = st.selectbox("Süre Seç:", [60, 90, 120, 180], format_func=lambda x: f"{x} Saniye", key="dinlenme_sure")
         if st.button("▶️ Sayacı Başlat", use_container_width=True):
@@ -101,6 +106,10 @@ with st.sidebar:
     if st.button("🚪 Çıkış Yap", use_container_width=True):
         st.session_state["giris_yapildi"] = False
         st.rerun()
+
+    # Eğer yukarıda expander açılmadıysa varsayılan atayalım
+    if 'secilen_tema' not in locals():
+        secilen_tema = "🟢 Neon Gym (Siyah & Yeşil)"
 
 # --- ÖZEL CSS TEMA KODLARI ---
 
@@ -144,6 +153,54 @@ elif secilen_tema == "🔴 Cyber Red (Agresif Kırmızı)":
         }
         .stButton>button {
             background-color: #ff2a2a !important;
+            color: #ffffff !important;
+            font-weight: bold !important;
+            border-radius: 8px !important;
+            border: none !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+elif secilen_tema == "💎 Cyberpunk Mor":
+    st.markdown("""
+        <style>
+        .stApp {
+            background: linear-gradient(135deg, #0d0914 0%, #171026 100%);
+            color: #f3e8ff;
+        }
+        div[data-testid="stMetric"] {
+            background-color: #221638;
+            border: 1px solid #a855f7;
+            padding: 12px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.25);
+        }
+        .stButton>button {
+            background-color: #a855f7 !important;
+            color: #ffffff !important;
+            font-weight: bold !important;
+            border-radius: 8px !important;
+            border: none !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+elif secilen_tema == "🔥 Sunset Turuncu":
+    st.markdown("""
+        <style>
+        .stApp {
+            background: linear-gradient(135deg, #140a06 0%, #26120b 100%);
+            color: #ffedd5;
+        }
+        div[data-testid="stMetric"] {
+            background-color: #36190f;
+            border: 1px solid #f97316;
+            padding: 12px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(249, 115, 22, 0.25);
+        }
+        .stButton>button {
+            background-color: #f97316 !important;
             color: #ffffff !important;
             font-weight: bold !important;
             border-radius: 8px !important;
