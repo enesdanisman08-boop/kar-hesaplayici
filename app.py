@@ -17,6 +17,10 @@ st.markdown("""
 if "giris_yapildi" not in st.session_state:
     st.session_state["giris_yapildi"] = False
 
+# Oturumda tema hafızası yoksa varsayılan yeşil yapalım
+if "secilen_tema" not in st.session_state:
+    st.session_state["secilen_tema"] = "🟢 Neon Gym (Siyah & Yeşil)"
+
 ICERDEKILER = {
     "enes": "1453",
     "admin": "admin"
@@ -45,7 +49,8 @@ if not st.session_state["giris_yapildi"]:
 
 with st.sidebar:
     with st.expander("🎨 Tema & Renk Ayarları"):
-        secilen_tema = st.selectbox(
+        # Seçilen temayı session_state'e bağlıyoruz ki her yenilemede sıfırlanmasın
+        st.session_state["secilen_tema"] = st.selectbox(
             "Tema Seç:",
             [
                 "🟢 Neon Gym (Siyah & Yeşil)",
@@ -54,8 +59,18 @@ with st.sidebar:
                 "🔥 Sunset Turuncu",
                 "⚪ Clean White (Ferah Beyaz)",
                 "⚫ Standart Koyu"
-            ]
+            ],
+            index=[
+                "🟢 Neon Gym (Siyah & Yeşil)",
+                "🔴 Cyber Red (Agresif Kırmızı)",
+                "💎 Cyberpunk Mor",
+                "🔥 Sunset Turuncu",
+                "⚪ Clean White (Ferah Beyaz)",
+                "⚫ Standart Koyu"
+            ].index(st.session_state["secilen_tema"])
         )
+
+    secilen_tema = st.session_state["secilen_tema"]
 
     st.markdown("---")
     st.markdown("## 🧭 Navigasyon")
@@ -112,9 +127,6 @@ with st.sidebar:
     if st.button("🚪 Çıkış Yap", use_container_width=True):
         st.session_state["giris_yapildi"] = False
         st.rerun()
-
-    if 'secilen_tema' not in locals():
-        secilen_tema = "🟢 Neon Gym (Siyah & Yeşil)"
 
 # --- ÖZEL CSS TEMA KODLARI ---
 
