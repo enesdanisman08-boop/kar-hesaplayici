@@ -153,7 +153,7 @@ with top_col2:
 
 secilen_tema = st.session_state["secilen_tema"]
 
-# --- DİNAMİK TEMA VE KUTU STİLLERİ ---
+# --- DİNAMİK TEMA VE ÖZEL KART STİLLERİ ---
 
 if secilen_tema == "🌙 Koyu Mod":
     st.markdown("""
@@ -161,12 +161,14 @@ if secilen_tema == "🌙 Koyu Mod":
         .stApp { background-color: #0e1117; color: #fafafa; }
         div[data-testid="stMetric"] { background-color: #262730; border: 1px solid #4f46e5; padding: 12px; border-radius: 10px; }
         .stButton>button { background-color: #4f46e5 !important; color: #ffffff !important; font-weight: bold !important; border-radius: 8px !important; border: none !important; }
-        div[data-testid="stVerticalBlock"] div[data-testid="stVerticalBlock"] div[data-testid="stContainer"] {
+        .custom-card {
             background-color: #161b22 !important;
             border: 1px solid #30363d !important;
             border-radius: 12px !important;
-            padding: 15px !important;
+            padding: 20px !important;
+            margin-bottom: 20px !important;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+            color: #fafafa !important;
         }
         </style>
     """, unsafe_allow_html=True)
@@ -177,12 +179,14 @@ elif secilen_tema == "☀️ Açık Mod":
         .stApp { background-color: #f8fafc; color: #0f172a; }
         div[data-testid="stMetric"] { background-color: #ffffff; border: 1px solid #cbd5e1; padding: 12px; border-radius: 10px; }
         .stButton>button { background-color: #0284c7 !important; color: #ffffff !important; font-weight: bold !important; border-radius: 8px !important; border: none !important; }
-        div[data-testid="stVerticalBlock"] div[data-testid="stVerticalBlock"] div[data-testid="stContainer"] {
+        .custom-card {
             background-color: #ffffff !important;
             border: 1px solid #cbd5e1 !important;
             border-radius: 12px !important;
-            padding: 15px !important;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+            padding: 20px !important;
+            margin-bottom: 20px !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+            color: #0f172a !important;
         }
         </style>
     """, unsafe_allow_html=True)
@@ -193,12 +197,14 @@ elif secilen_tema == "💻 PC Teması (Neon Yeşil)":
         .stApp { background: linear-gradient(135deg, #0a0f0d 0%, #111a16 100%); color: #e0f2e9; }
         div[data-testid="stMetric"] { background-color: #16241d; border: 1px solid #00ff88; padding: 12px; border-radius: 10px; box-shadow: 0 0 8px rgba(0, 255, 136, 0.15); }
         .stButton>button { background-color: #00ff88 !important; color: #05140c !important; font-weight: bold !important; border-radius: 8px !important; border: none !important; }
-        div[data-testid="stVerticalBlock"] div[data-testid="stVerticalBlock"] div[data-testid="stContainer"] {
+        .custom-card {
             background-color: #16241d !important;
             border: 1px solid #00ff88 !important;
             border-radius: 12px !important;
-            padding: 15px !important;
+            padding: 20px !important;
+            margin-bottom: 20px !important;
             box-shadow: 0 0 10px rgba(0, 255, 136, 0.15) !important;
+            color: #e0f2e9 !important;
         }
         </style>
     """, unsafe_allow_html=True)
@@ -218,43 +224,61 @@ if menu == "🏠 Ana Menü (Komuta Merkezi)":
     c1, c2, c3 = st.columns(3)
 
     with c1:
-        with st.container(border=True):
-            st.markdown("### 📅 30 Günlük Kamp")
-            st.write("Günlük rotasyon menüleri, kalori takibi ve akşam check-in sistemi.")
-            if st.button("Kamp Paneline Git ➡️", use_container_width=True, key="btn_kamp"):
-                st.info("Sol menüden '30 Günlük Diyet & Takvim' seçebilirsin!")
+        st.markdown("""
+            <div class="custom-card">
+                <h3>📅 30 Günlük Kamp</h3>
+                <p>Günlük rotasyon menüleri, kalori takibi ve akşam check-in sistemi.</p>
+            </div>
+        """, unsafe_allow_html=True)
+        if st.button("Kamp Paneline Git ➡️", use_container_width=True, key="btn_kamp"):
+            st.info("Sol menüden '30 Günlük Diyet & Takvim' seçebilirsin!")
 
-        with st.container(border=True):
-            st.markdown("### 🍳 Tarif & Mutfak")
-            st.write("Profesyonel sporcu tarifleri ve kendi defterine not ettiklerin.")
-            if st.button("Tariflere Git ➡️", use_container_width=True, key="btn_tarif"):
-                st.info("Sol menüden 'Sporcu Tarif & Mutfak Defteri' seçebilirsin!")
+        st.markdown("""
+            <div class="custom-card">
+                <h3>🍳 Tarif & Mutfak</h3>
+                <p>Profesyonel sporcu tarifleri ve kendi defterine not ettiklerin.</p>
+            </div>
+        """, unsafe_allow_html=True)
+        if st.button("Tariflere Git ➡️", use_container_width=True, key="btn_tarif"):
+            st.info("Sol menüden 'Sporcu Tarif & Mutfak Defteri' seçebilirsin!")
 
     with c2:
-        with st.container(border=True):
-            st.markdown("### 📸 Form Arşivi")
-            st.write("Haftalık form fotoğraflarını yükle, kilo ve yağ değişimini incele.")
-            if st.button("Arşive Git ➡️", use_container_width=True, key="btn_arsiv"):
-                st.info("Sol menüden 'Vücut Dönüşüm & Form Arşivi' seçebilirsin!")
+        st.markdown("""
+            <div class="custom-card">
+                <h3>📸 Form Arşivi</h3>
+                <p>Haftalık form fotoğraflarını yükle, kilo ve yağ değişimini incele.</p>
+            </div>
+        """, unsafe_allow_html=True)
+        if st.button("Arşive Git ➡️", use_container_width=True, key="btn_arsiv"):
+            st.info("Sol menüden 'Vücut Dönüşüm & Form Arşivi' seçebilirsin!")
 
-        with st.container(border=True):
-            st.markdown("### 🤖 AI Kalori Asistanı")
-            st.write("Yediğin öğünleri yaz, kalori ve protein değerini anında hesaplasın.")
-            if st.button("AI Asistana Git ➡️", use_container_width=True, key="btn_ai"):
-                st.info("Sol menüden 'AI Kalori & Beslenme' seçebilirsin!")
+        st.markdown("""
+            <div class="custom-card">
+                <h3>🤖 AI Kalori Asistanı</h3>
+                <p>Yediğin öğünleri yaz, kalori ve protein değerini anında hesaplasın.</p>
+            </div>
+        """, unsafe_allow_html=True)
+        if st.button("AI Asistana Git ➡️", use_container_width=True, key="btn_ai"):
+            st.info("Sol menüden 'AI Kalori & Beslenme' seçebilirsin!")
 
     with c3:
-        with st.container(border=True):
-            st.markdown("### 🔥 Kardiyo & Yağ Yakım")
-            st.write("Eğimli yürüyüşte (Incline Treadmill) yaktığın saf yağı hesapla.")
-            if st.button("Kardiyoya Git ➡️", use_container_width=True, key="btn_kardiyo"):
-                st.info("Sol menüden 'Kardiyo & Yağ Yakım Hesaplayıcı' seçebilirsin!")
+        st.markdown("""
+            <div class="custom-card">
+                <h3>🔥 Kardiyo & Yağ Yakım</h3>
+                <p>Eğimli yürüyüşte (Incline Treadmill) yaktığın saf yağı hesapla.</p>
+            </div>
+        """, unsafe_allow_html=True)
+        if st.button("Kardiyoya Git ➡️", use_container_width=True, key="btn_kardiyo"):
+            st.info("Sol menüden 'Kardiyo & Yağ Yakım Hesaplayıcı' seçebilirsin!")
 
-        with st.container(border=True):
-            st.markdown("### 🏋️‍♂️ Ağırlık & PR Takibi")
-            st.write("Salonda bastığın ağırlıkları, ön/arka kol rekorlarını kaydet.")
-            if st.button("PR Takibine Git ➡️", use_container_width=True, key="btn_pr"):
-                st.info("Sol menüden 'Ağırlık & PR Takibi' seçebilirsin!")
+        st.markdown("""
+            <div class="custom-card">
+                <h3>🏋️‍♂️ Ağırlık & PR Takibi</h3>
+                <p>Salonda bastığın ağırlıkları, ön/arka kol rekorlarını kaydet.</p>
+            </div>
+        """, unsafe_allow_html=True)
+        if st.button("PR Takibine Git ➡️", use_container_width=True, key="btn_pr"):
+            st.info("Sol menüden 'Ağırlık & PR Takibi' seçebilirsin!")
 
     st.markdown("---")
     st.info(
