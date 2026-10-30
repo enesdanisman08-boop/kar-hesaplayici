@@ -3,8 +3,15 @@ import os
 import time
 import streamlit as st
 
-# Sayfa Ayarları
+# Sayfa Ayarları ve Mobil PWA Entegrasyonu
 st.set_page_config(page_title="Enes Spor & Yaşam Paneli", page_icon="💪", layout="centered")
+
+st.markdown("""
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0a0f0d">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+""", unsafe_allow_html=True)
 
 # --- KULLANICI GİRİŞ SİSTEMİ ---
 if "giris_yapildi" not in st.session_state:
@@ -345,7 +352,6 @@ elif menu == "📸 Vücut Dönüşüm & Form Arşivi":
     st.write(
         "İster bilgisayarından ister telefondan form fotoğraflarını yükle; hangi gün olduğunu ve kilosunu not et, değişimini anlık takip et!")
 
-    # Fotoğrafların kaydedileceği klasör
     UPLOAD_FOLDER = "form_fotolari"
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)
@@ -372,7 +378,6 @@ elif menu == "📸 Vücut Dönüşüm & Form Arşivi":
             with open(dosya_yolu, "wb") as f:
                 f.write(yuklenen_dosya.getbuffer())
 
-            # Bilgileri txt dosyasına kaydedelim
             meta_satir = f"{dosya_adi}|{simdi_tarih}|{form_etiket}|{form_kilo}|{form_notu}\n"
             with open("form_arsiv_meta.txt", "a", encoding="utf-8") as meta_f:
                 meta_f.write(meta_satir)
