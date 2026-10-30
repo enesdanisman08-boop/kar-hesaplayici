@@ -1,0 +1,20 @@
+{
+  "name": "Enes Spor & Yaşam Paneli",
+  "short_name": "Spor Panelim",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0f0d",
+  "theme_color": "#00ff88",
+  "icons": [
+    {
+      "src": "https://img.icons8.com/color/96/flexed-biceps.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "https://img.icons8.com/color/512/flexed-biceps.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
