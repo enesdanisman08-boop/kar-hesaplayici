@@ -311,4 +311,21 @@ elif menu == "📝 Notlar & Hedefler":
     st.subheader("📝 Koçluk Notları ve Hedefler")
     yeni_not = st.text_area("Notunu veya yeni tarif fikirlerini yaz:")
     if st.button("Notu Kaydet"):
-        with open("spor_not
+        with open("spor_notlari.txt", "a", encoding="utf-8") as f:
+            f.write(f"[{simdi}] {yeni_not}\n")
+        st.success("Not eklendi.")
+    try:
+        with open("spor_notlari.txt", "r", encoding="utf-8") as f:
+            for n in f.readlines():
+                st.text(n.strip())
+    except FileNotFoundError:
+        pass
+
+elif menu == "🗑️ Kayıtları Temizle":
+    st.subheader("🗑️ Veri Sıfırlama")
+    if st.button("Tüm Geçmişi Temizle"):
+        for dosya in ["spor_beslenme_kayitlari.txt", "antrenman_programi.txt", "agirlik_rekorlari.txt",
+                      "supplement_takip.txt", "spor_notlari.txt"]:
+            with open(dosya, "w", encoding="utf-8") as f:
+                pass
+        st.success("Tüm veriler sıfırlandı!")
