@@ -12,7 +12,7 @@ st.markdown("""
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
-        /* Ortadaki ana menü kutularını (st.container border=True) belirgin koyu renk yapma */
+        /* Ortadaki ana menü kutularını belirgin koyu renk yapma */
         div[data-testid="stVerticalBlock"] div[data-testid="stVerticalBlock"] div[data-testid="stContainer"] {
             background-color: #161b22 !important;
             border: 1px solid #30363d !important;
@@ -28,7 +28,7 @@ if "giris_yapildi" not in st.session_state:
     st.session_state["giris_yapildi"] = False
 
 if "secilen_tema" not in st.session_state:
-    st.session_state["secilen_tema"] = "⚫ Standart Koyu"
+    st.session_state["secilen_tema"] = "🌙 Koyu Mod"
 
 ICERDEKILER = {
     "enes": "1453",
@@ -99,33 +99,9 @@ if not st.session_state["giris_yapildi"]:
 
     st.stop()
 
-# --- SOL MENÜ (SIDEBAR) & KOMPAKT DÜZEN ---
+# --- SAĞ ÜST KÖŞE MOD SEÇİCİ & SOL MENÜ ---
 
 with st.sidebar:
-    with st.expander("🎨 Tema & Renk Ayarları"):
-        st.session_state["secilen_tema"] = st.selectbox(
-            "Tema Seç:",
-            [
-                "⚫ Standart Koyu",
-                "🟢 Neon Gym (Siyah & Yeşil)",
-                "🔴 Cyber Red (Agresif Kırmızı)",
-                "💎 Cyberpunk Mor",
-                "🔥 Sunset Turuncu",
-                "⚪ Clean White (Ferah Beyaz)"
-            ],
-            index=[
-                "⚫ Standart Koyu",
-                "🟢 Neon Gym (Siyah & Yeşil)",
-                "🔴 Cyber Red (Agresif Kırmızı)",
-                "💎 Cyberpunk Mor",
-                "🔥 Sunset Turuncu",
-                "⚪ Clean White (Ferah Beyaz)"
-            ].index(st.session_state["secilen_tema"])
-        )
-
-    secilen_tema = st.session_state["secilen_tema"]
-
-    st.markdown("---")
     st.markdown("## 🧭 Navigasyon")
     menu = st.selectbox(
         "Gitmek İstediğin Bölüm:",
@@ -183,9 +159,20 @@ with st.sidebar:
         st.session_state["giris_yapildi"] = False
         st.rerun()
 
+# --- SAĞ ÜST KÖŞE GÖRÜNÜM KONTROLÜ (Koyu - Açık - PC Teması) ---
+top_col1, top_col2 = st.columns([6, 2])
+with top_col2:
+    st.session_state["secilen_tema"] = st.selectbox(
+        "Görünüm Modu:",
+        ["🌙 Koyu Mod", "☀️ Açık Mod", "💻 PC Teması (Neon Yeşil)"],
+        label_visibility="collapsed"
+    )
+
+secilen_tema = st.session_state["secilen_tema"]
+
 # --- ÖZEL CSS TEMA KODLARI ---
 
-if secilen_tema == "⚫ Standart Koyu":
+if secilen_tema == "🌙 Koyu Mod":
     st.markdown("""
         <style>
         .stApp {
@@ -208,7 +195,34 @@ if secilen_tema == "⚫ Standart Koyu":
         </style>
     """, unsafe_allow_html=True)
 
-elif secilen_tema == "🟢 Neon Gym (Siyah & Yeşil)":
+elif secilen_tema == "☀️ Açık Mod":
+    st.markdown("""
+        <style>
+        .stApp {
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+        div[data-testid="stMetric"] {
+            background-color: #ffffff;
+            border: 1px solid #cbd5e1;
+            padding: 12px;
+            border-radius: 10px;
+        }
+        .stButton>button {
+            background-color: #0284c7 !important;
+            color: #ffffff !important;
+            font-weight: bold !important;
+            border-radius: 8px !important;
+            border: none !important;
+        }
+        div[data-testid="stContainer"] {
+            background-color: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+elif secilen_tema == "💻 PC Teması (Neon Yeşil)":
     st.markdown("""
         <style>
         .stApp {
@@ -225,102 +239,6 @@ elif secilen_tema == "🟢 Neon Gym (Siyah & Yeşil)":
         .stButton>button {
             background-color: #00ff88 !important;
             color: #05140c !important;
-            font-weight: bold !important;
-            border-radius: 8px !important;
-            border: none !important;
-        }
-        </style>
-    """, unsafe_allow_html=True)
-
-elif secilen_tema == "🔴 Cyber Red (Agresif Kırmızı)":
-    st.markdown("""
-        <style>
-        .stApp {
-            background: linear-gradient(135deg, #120606 0%, #1f0b0b 100%);
-            color: #fcebeb;
-        }
-        div[data-testid="stMetric"] {
-            background-color: #290f0f;
-            border: 1px solid #ff2a2a;
-            padding: 12px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(255, 42, 42, 0.2);
-        }
-        .stButton>button {
-            background-color: #ff2a2a !important;
-            color: #ffffff !important;
-            font-weight: bold !important;
-            border-radius: 8px !important;
-            border: none !important;
-        }
-        </style>
-    """, unsafe_allow_html=True)
-
-elif secilen_tema == "💎 Cyberpunk Mor":
-    st.markdown("""
-        <style>
-        .stApp {
-            background: linear-gradient(135deg, #0d0914 0%, #171026 100%);
-            color: #f3e8ff;
-        }
-        div[data-testid="stMetric"] {
-            background-color: #221638;
-            border: 1px solid #a855f7;
-            padding: 12px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(168, 85, 247, 0.25);
-        }
-        .stButton>button {
-            background-color: #a855f7 !important;
-            color: #ffffff !important;
-            font-weight: bold !important;
-            border-radius: 8px !important;
-            border: none !important;
-        }
-        </style>
-    """, unsafe_allow_html=True)
-
-elif secilen_tema == "🔥 Sunset Turuncu":
-    st.markdown("""
-        <style>
-        .stApp {
-            background: linear-gradient(135deg, #140a06 0%, #26120b 100%);
-            color: #ffedd5;
-        }
-        div[data-testid="stMetric"] {
-            background-color: #36190f;
-            border: 1px solid #f97316;
-            padding: 12px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(249, 115, 22, 0.25);
-        }
-        .stButton>button {
-            background-color: #f97316 !important;
-            color: #ffffff !important;
-            font-weight: bold !important;
-            border-radius: 8px !important;
-            border: none !important;
-        }
-        </style>
-    """, unsafe_allow_html=True)
-
-elif secilen_tema == "⚪ Clean White (Ferah Beyaz)":
-    st.markdown("""
-        <style>
-        .stApp {
-            background-color: #f4f7f9;
-            color: #1c252c;
-        }
-        div[data-testid="stMetric"] {
-            background-color: #ffffff;
-            border: 2px solid #007bff;
-            padding: 12px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-        }
-        .stButton>button {
-            background-color: #007bff !important;
-            color: #ffffff !important;
             font-weight: bold !important;
             border-radius: 8px !important;
             border: none !important;
