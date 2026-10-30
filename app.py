@@ -191,7 +191,6 @@ if menu == "📅 30 Günlük Diyet & Takvim":
     st.write(
         "Her gün aynı şeyi yemekten sıkılmaman için senin sevdiğin besinlerle hazırlanmış **3 farklı rotasyon menüsü**. Gününü seç, menünü gör ve akşam uyup uymadığını işaretle!")
 
-    # Geçmiş kayıtları okuyup kamp ilerlemesini hesaplayalım
     tamamlanan_gun_sayisi = 0
     basarili_gun_sayisi = 0
     kayitli_gunler = []
@@ -205,7 +204,6 @@ if menu == "📅 30 Günlük Diyet & Takvim":
     except FileNotFoundError:
         pass
 
-    # Üst Özet Kartları
     k_col1, k_col2, k_col3 = st.columns(3)
     k_col1.metric("Tamamlanan Kamp Günü", f"{tamamlanan_gun_sayisi} / 30 Gün")
     k_col2.metric("Tam Uyulan Gün", f"{basarili_gun_sayisi} Gün", "Disiplin 🔥")
@@ -217,14 +215,12 @@ if menu == "📅 30 Günlük Diyet & Takvim":
 
     st.markdown("---")
 
-    # Gün Seçimi (1 - 30)
     secilen_kamp_gunu = st.selectbox(
         "📌 Planını Görmek veya İşaretlemek İstediğin Günü Seç:",
         [f"{i}. Gün" for i in range(1, 31)]
     )
     gun_no = int(secilen_kamp_gunu.split(".")[0])
 
-    # Gün numarasına göre 3'lü Rotasyon Menüsü
     if gun_no % 3 == 1:
         menu_baslik = "🅰️ MENÜ A: Klasik Yulaf Kasesi & Çift Tavuk Günü (Yüksek Protein)"
         kahvalti = "🥣 **Kahvaltı:** 70g Yulaf + 4 YK Yoğurt + 1 Ölçek Whey Protein + 1 Muz + 1 TK Damla Çikolata & Hindistan Cevizi (~600 kcal | 45g Protein)"
@@ -585,47 +581,136 @@ elif menu == "🗓️ Antrenman & PPL Takvimi":
     except FileNotFoundError:
         st.info("Henüz antrenman kaydı yok.")
 
+# --- 6. BÖLÜM: DETAYLI AĞIRLIK & PR TAKİBİ (BÖLGE BÖLGE TÜM HAREKETLER) ---
 elif menu == "🏋️‍♂️ Ağırlık & PR Takibi":
     st.subheader("🏋️‍♂️ Salonda Bastığın Ağırlıklar & PR Takibi")
     st.caption(
-        "💡 İpucu: 84 kg'dan 80 kg'a düşerken kaldırdığın ağırlıkları sabit tutmak (veya artırmak) **hiç kas kaybetmediğinin** en büyük kanıtıdır!")
-    hareket = st.selectbox("Hareket Seç", [
-        "Bench Press / Dumbbell Press",
-        "Incline Dumbbell Press",
-        "Lat Pulldown / Barfiks",
-        "Barbell Row / Cable Row",
-        "Shoulder Press",
-        "Lateral Raise",
-        "Squat / Leg Press",
-        "Romanian Deadlift (RDL)",
-        "Barbell Curl / Hammer Curl",
-        "Triceps Pushdown"
-    ])
+        "💡 İpucu: Önce çalıştığın **Kas Grubunu** seç, ardından o bölgeye ait hareketi seçip bastığın ağırlığı kaydet!")
+
+    hareket_kutuphanesi = {
+        "💪 Ön Kol (Biceps & Forearm)": [
+            "Barbell Curl (Düz Bar)",
+            "EZ-Bar Curl (Z-Bar)",
+            "Dumbbell Alternating Curl",
+            "Hammer Curl (Çekiç Tutuş)",
+            "Incline Dumbbell Curl (Sehpada)",
+            "Preacher Curl (Scott Sehpası / Makine)",
+            "Concentration Curl",
+            "Cable Bicep Curl (Alt Makara)",
+            "High Cable Curl (Çift Kol Pozlama)",
+            "Spider Curl",
+            "Reverse Barbell / Cable Curl (Ön Kol & Bilek)",
+            "Wrist Curl (Bilek Güçlendirme)",
+            "➕ Listede Olmayan Özel Hareket Yaz"
+        ],
+        "🔱 Arka Kol (Triceps)": [
+            "Triceps Rope Pushdown (Halat İtiş)",
+            "Triceps Straight / V-Bar Pushdown (Düz/V Demir)",
+            "Overhead Cable Triceps Extension (Baş Üstü Halat)",
+            "Overhead Dumbbell Extension (Tek/Çift Dumbbell)",
+            "Skullcrusher / Lying Triceps Extension (Alna Press)",
+            "Close Grip Bench Press (Dar Tutuş Göğüs Press)",
+            "Triceps Dips (Vücut Ağırlığı / Ağırlıklı)",
+            "Bench Dips",
+            "Single Arm Cable Reverse Pushdown (Tek Kol Ters Tutuş)",
+            "Dumbbell Triceps Kickback",
+            "➕ Listede Olmayan Özel Hareket Yaz"
+        ],
+        "🔥 Göğüs (Chest)": [
+            "Barbell Bench Press",
+            "Dumbbell Flat Bench Press",
+            "Incline Barbell Bench Press (Üst Göğüs)",
+            "Incline Dumbbell Press (Üst Göğüs)",
+            "Chest Press Machine",
+            "Pec Deck / Butterfly (Makine Sıkıştırma)",
+            "Cable Crossover (Üst / Orta / Alt Makara)",
+            "Dumbbell Fly / Incline Fly",
+            "Chest Dips (Göğüs Odaklı)",
+            "Push-up / Şınav",
+            "➕ Listede Olmayan Özel Hareket Yaz"
+        ],
+        "🦅 Sırt (Back)": [
+            "Lat Pulldown (Geniş Tutuş)",
+            "Close Grip / V-Bar Lat Pulldown (Dar Tutuş)",
+            "Pull-up / Barfiks",
+            "Barbell Bent-Over Row",
+            "Seated Cable Row (Oturarak Çekiş)",
+            "One-Arm Dumbbell Row (Tek Kol Testere)",
+            "T-Bar Row / Chest Supported Row",
+            "Rope Straight-Arm Pulldown (Halatla Kanat İtiş)",
+            "Deadlift",
+            "Hyperextension (Alt Sırt / Bel)",
+            "➕ Listede Olmayan Özel Hareket Yaz"
+        ],
+        "🥥 Omuz (Shoulders)": [
+            "Overhead Dumbbell Shoulder Press",
+            "Military Press / Barbell Overhead Press",
+            "Shoulder Press Machine",
+            "Smith Machine Shoulder Press",
+            "Dumbbell Lateral Raise (Yan Omuz Açış)",
+            "Cable Lateral Raise (Kabloda Yan Omuz)",
+            "Face Pull (Arka Omuz & Trapez)",
+            "Reverse Pec Deck / Rear Delt Fly (Arka Omuz Makine)",
+            "Dumbbell Front Raise (Ön Omuz)",
+            "Dumbbell / Barbell Shrug (Trapez)",
+            "➕ Listede Olmayan Özel Hareket Yaz"
+        ],
+        "🦵 Bacak & Karın (Legs & Core)": [
+            "Barbell Squat / Smith Machine Squat",
+            "Leg Press",
+            "Hack Squat",
+            "Leg Extension (Ön Bacak Makine)",
+            "Lying / Seated Leg Curl (Arka Bacak Makine)",
+            "Romanian Deadlift - RDL (Arka Bacak & Kalça)",
+            "Bulgarian Split Squat / Walking Lunge",
+            "Standing / Seated Calf Raise (Kalf)",
+            "Cable Crunch (Kabloda Karın)",
+            "Hanging Leg Raise (Asılarak Karın)",
+            "➕ Listede Olmayan Özel Hareket Yaz"
+        ]
+    }
+
+    secilen_kas_grubu = st.selectbox("1️⃣ Kas Grubu Seç:", list(hareket_kutuphanesi.keys()))
+    secilen_hareket = st.selectbox("2️⃣ Hareket Seç:", hareket_kutuphanesi[secilen_kas_grubu])
+
+    if secilen_hareket == "➕ Listede Olmayan Özel Hareket Yaz":
+        hareket = st.text_input("Hareketin Adını Yaz:", "Özel Hareket")
+    else:
+        hareket = secilen_hareket
 
     col_p1, col_p2, col_p3 = st.columns(3)
     with col_p1:
-        agirlik_kg = st.number_input("Ağırlık (kg)", min_value=0.0, value=60.0, step=2.5)
+        agirlik_kg = st.number_input("Ağırlık (kg)", min_value=0.0, value=30.0, step=2.5)
     with col_p2:
         set_sayisi = st.number_input("Set Sayısı", min_value=1, value=4, step=1)
     with col_p3:
         tekrar_sayisi = st.number_input("Tekrar Sayısı", min_value=1, value=10, step=1)
 
-    if st.button("🔥 Ağırlık Rekorunu Kaydet"):
-        pr_metni = f"[{simdi_tarih}] {hareket} -> {agirlik_kg} kg ({set_sayisi} Set x {tekrar_sayisi} Tekrar)\n"
+    pr_notu = st.text_input("Set Notu (İsteğe bağlı - Örn: Son set drop yapıldı, pump efsaneydi)")
+
+    if st.button("🔥 Ağırlık Rekorunu Kaydet", use_container_width=True):
+        not_kismi = f" | Not: {pr_notu}" if pr_notu else ""
+        pr_metni = f"[{simdi_tarih}] ({secilen_kas_grubu.split()[1]}) {hareket} -> {agirlik_kg} kg ({set_sayisi} Set x {tekrar_sayisi} Tekrar){not_kismi}\n"
         with open("agirlik_rekorlari.txt", "a", encoding="utf-8") as f:
             f.write(pr_metni)
-        st.success("Ağırlık kaydı eklendi! Güçlenmeye devam 💪")
+        st.success(f"{hareket} kaydı eklendi! Güçlenmeye devam 💪")
 
     st.markdown("---")
     st.subheader("📈 Kayıtlı Ağırlık Geçmişin")
+
+    # Geçmiş kayıtlarda bölgeye veya harekete göre filtreleme
+    pr_filtre = st.text_input(
+        "🔍 Kayıtlarda Hareket veya Bölge Ara (Örn: Curl, Pushdown, Ön Kol, Göğüs):").strip().lower()
+
     try:
         with open("agirlik_rekorlari.txt", "r", encoding="utf-8") as f:
             pr_satirlar = f.readlines()
         if not pr_satirlar:
             st.info("Henüz ağırlık kaydı girilmemiş.")
         else:
-            for p_satir in pr_satirlar:
-                st.text(p_satir.strip())
+            for p_satir in reversed(pr_satirlar):
+                if pr_filtre in p_satir.lower():
+                    st.text(p_satir.strip())
     except FileNotFoundError:
         st.info("Henüz kayıt dosyası oluşturulmadı.")
 
