@@ -13,7 +13,7 @@ st.markdown("""
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 """, unsafe_allow_html=True)
 
-# --- KULLANICI GİRİŞ SİSTEMİ (ÖZELLEŞTİRİLMİŞ) ---
+# --- KULLANICI GİRİŞ SİSTEMİ (EFSANE SPORCU DUVAR KAĞITLI) ---
 if "giris_yapildi" not in st.session_state:
     st.session_state["giris_yapildi"] = False
 
@@ -26,29 +26,40 @@ ICERDEKILER = {
 }
 
 if not st.session_state["giris_yapildi"]:
-    # Özel Giriş Ekranı Tasarımı için CSS
     st.markdown("""
         <style>
+        .stApp {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.85)), 
+                              url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
         .login-container {
-            background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
-            border: 2px solid #4f46e5;
+            background: rgba(13, 17, 23, 0.85);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(79, 70, 229, 0.6);
             padding: 30px;
             border-radius: 16px;
-            box-shadow: 0 8px 24px rgba(79, 70, 229, 0.25);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
             text-align: center;
             max-width: 450px;
-            margin: 40px auto;
+            margin: 20px auto;
         }
         .login-title {
             color: #ffffff;
             font-size: 26px;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         .login-subtitle {
-            color: #94a3b8;
-            font-size: 14px;
+            color: #38bdf8;
+            font-size: 13px;
             margin-bottom: 20px;
+            font-weight: 600;
         }
         </style>
 
@@ -110,6 +121,7 @@ with st.sidebar:
         "Gitmek İstediğin Bölüm:",
         [
             "📅 30 Günlük Diyet & Takvim",
+            "🍳 Sporcu Tarif & Mutfak Defteri",
             "📸 Vücut Dönüşüm & Form Arşivi",
             "🤖 AI Kalori & Beslenme",
             "🔥 Kardiyo & Yağ Yakım Hesaplayıcı",
@@ -413,7 +425,135 @@ if menu == "📅 30 Günlük Diyet & Takvim":
             else:
                 st.error(k_gun.strip())
 
-# --- 2. BÖLÜM: VÜCUT DÖNÜŞÜM & FORM ARŞİVİ ---
+# --- YENİ BÖLÜM: SPORCU TARİF & MUTFAK DEFTERİ ---
+elif menu == "🍳 Sporcu Tarif & Mutfak Defteri":
+    st.subheader("🍳 Sporcu Mutfak Defteri & AI Tarif Kataloğu")
+    st.write(
+        "Burada hem profesyonel diyet tariflerini (tam ölçü ve adım adım hazırlanışlarıyla) inceleyebilir hem de kendi yaptığın özel tarifleri not edebilirsin!")
+
+    tab1, tab2 = st.tabs(["📖 Örnek AI / Sporcu Tarif Kataloğu", "✍️ Kendi Tarifini Deftere Ekle"])
+
+    with tab1:
+        st.markdown("### 🏆 En Popüler Diyet & Fitness Tarifleri")
+
+        secilen_katalog_tarif = st.selectbox(
+            "İncelemek İstediğin Tarifi Seç:",
+            [
+                "🥣 Çikolatalı & Muzlu Proteinli Yulaf Kasesi",
+                "🍗 Lokum Gibi Sulu Tavuk Göğsü & Baldo Pirinç Pilavı",
+                "🥩 Anne Usulü Yağsız Diyet Köfte Sote",
+                "🥞 Şekersiz Yulaf & Muzlu Protein Pankeki"
+            ]
+        )
+
+        if "Yulaf Kasesi" in secilen_katalog_tarif:
+            st.info("""
+            ### 🥣 Çikolatalı & Muzlu Proteinli Yulaf Kasesi
+            * **Öğün Türü:** Kahvaltı / Antrenman Öncesi
+            * **Besin Değeri:** ~580 kcal | 42g Protein | 65g Karbonhidrat
+
+            #### 🛒 Malzemeler:
+            * 70g Yulaf Ezmesi
+            * 1 su bardağı (200ml) Yağsız Süt veya Sıcak Su
+            * 4 yemek kaşığı Süzme Yoğurt
+            * 1 ölçek Çikolatalı Whey Protein Tozu
+            * 1 adet Orta Boy Muz (Dilimlenmiş)
+            * 1 tatlı kaşığı Damla Çikolata veya Kakao
+
+            #### 👨‍🍳 Adım Adım Hazırlanışı:
+            1. **Yulafın Pişirilmesi:** Yulafı bir kaseye alın, üzerine sıcak suyu veya sütü ekleyip 3-4 dakika yumuşayana kadar mikrodalgada veya ocakta ısıtın.
+            2. **Protein Karışımı:** Yulaf biraz ılındıktan sonra içine 1 ölçek çikolatalı whey protein tozunu ve süzme yoğurdu ekleyip pürüzsüz kıvam alana kadar iyice karıştırın.
+            3. **Süsleme:** Üzerine dilimlenmiş muzları dizin. 1 tatlı kaşığı damla çikolata serperek servis edin. Afiyet olsun knk!
+            """)
+
+        elif "Tavuk" in secilen_katalog_tarif:
+            st.info("""
+            ### 🍗 Lokum Gibi Sulu Tavuk Göğsü & Baldo Pirinç Pilavı
+            * **Öğün Türü:** Öğle / Akşam Ana Öğün
+            * **Besin Değeri:** ~620 kcal | 75g Protein | 70g Karbonhidrat
+
+            #### 🛒 Malzemeler:
+            * 200g Tavuk Göğsü (Kuşbaşı veya Fileto)
+            * 150g Pişmiş Baldo veya Basmati Pirinç
+            * 1 tatlı kaşığı Zeytinyağı veya Tereyağı
+            * Baharatlar: Tuz, karabiber, kekik, toz kırmızı biber, sarımsak tozu
+
+            #### 👨‍🍳 Adım Adım Hazırlanışı:
+            1. **Pirinç Pilavı Tarifi:** 1 çay bardağı pirinci ılık suda 15 dakika bekletip nişastası akana kadar yıkayın. Tencerede 1 tatlı kaşığı zeytinyağı ile pirinçleri 2-3 dakika kavurun. Üzerine **1.5 su bardağı sıcak su** ve biraz tuz ekleyip kısık ateşte suyunu çekene kadar pişmeye bırakın. Suyunu çekince altını kapatıp 10 dk dinlendirin.
+            2. **Tavuk Marine & Pişirme:** Tavuk göğsünü küp doğrayın. Zeytinyağı ve baharatlarla (kekik, kırmızı biber, sarımsak) harmanlayın. Yapışmaz teflon tavayı yüksek ateşte ısıtın (yağ eklemenize gerek yok). Tavukları tavaya atıp suyunu salıp çekene kadar yaklaşık 8-10 dakika mühürleyin.
+            3. **Servis:** Yanına bol yeşillikli salata ile tabağa dizin!
+            """)
+
+        elif "Köfte" in secilen_katalog_tarif:
+            st.info("""
+            ### 🥩 Anne Usulü Yağsız Diyet Köfte Sote
+            * **Öğün Türü:** Öğle Yemeği
+            * **Besin Değeri:** ~650 kcal | 55g Protein | 60g Karbonhidrat
+
+            #### 🛒 Malzemeler:
+            * 200g Yağsız Dana Kıyma (%5 yağ oranlı)
+            * 1 adet küçük boy rendelenmiş soğan ve 1 diş sarımsak
+            * 2 yemek kaşığı galeta unu veya yulaf unu
+            * 200g Pişmiş Pirinç Pilavı (Yanı için)
+
+            #### 👨‍🍳 Adım Adım Hazırlanışı:
+            1. **Köfte Harcı:** Kıyma, rendelenmiş soğan, sarımsak, galeta unu, tuz ve karabiberi bir kapta 5 dakika yoğurun. Ceviz büyüklüğünde yuvarlaklar yapın.
+            2. **Pişirme:** Izgara tavada veya fırında 200 derecede 15 dakika yağsız olarak pişirin. Pilav ile servis edin.
+            """)
+
+        elif "Pankek" in secilen_katalog_tarif:
+            st.info("""
+            ### 🥞 Şekersiz Yulaf & Muzlu Protein Pankeki
+            * **Öğün Türü:** Kahvaltı / Tatlı Krizi Giderici
+            * **Besin Değeri:** ~450 kcal | 35g Protein | 50g Karbonhidrat
+
+            #### 🛒 Malzemeler:
+            * 50g Yulaf Unu (Yulafı blenderdan geçirin)
+            * 1 adet olgun muz (Çatalla ezilmiş)
+            * 1 tam yumurta + 1 yumurta beyazı
+            * 1 ölçek Protein Tozu (Vanilya veya Çikolata)
+
+            #### 👨‍🍳 Adım Adım Hazırlanışı:
+            1. Ezilmiş muz, yumurtalar, yulaf unu ve protein tozunu bir kapta çırpın. Boza kıvamına gelmelidir (kıvam koyu olursa çok az süt/su ekleyin).
+            2. Isıtılmış yapışmaz tavaya kepçeyle dökün, göz göz olunca ters çevirip pişirin. Üzerine bal veya fıstık ezmesi gezdirerek yiyebilirsiniz!
+            """)
+
+    with tab2:
+        st.markdown("### ✍️ Kendi Tarifini Deftere Kaydet")
+
+        with st.form("kendi_tarif_formu", clear_on_submit=True):
+            t_adi = st.text_input("Tarifin Adı (Örn: Enes'in Özel Tavuklu Makarnası)")
+            t_tur = st.selectbox("Öğün Türü", ["Kahvaltı", "Öğle Yemeği", "Akşam Yemeği", "Ara Öğün / Tatlı"])
+            t_malzeme = st.text_area("Malzemeler (Örn: 200g tavuk, 1 paket makarna vb.)")
+            t_tarif = st.text_area("Hazırlanışı / Sos Tarifi (Örn: Su kaynatılır, sos için salça kavrulur...)")
+
+            kaydet_btn = st.form_submit_button("💾 Tarifi Deftere Kaydet", use_container_width=True)
+
+            if kaydet_btn:
+                if t_adi and t_tarif:
+                    tarif_satiri = f"[{simdi_tarih}] 🍳 **{t_adi}** ({t_tur})\n* **Malzemeler:** {t_malzeme}\n* **Tarif:** {t_tarif}\n---\n"
+                    with open("kullanici_tarifleri.txt", "a", encoding="utf-8") as tf:
+                        tf.write(tarif_satiri)
+                    st.success("Tarifin başarıyla deftere kaydedildi knk! 🔥")
+                else:
+                    st.error("Lütfen tarif adını ve hazırlanışını boş bırakma.")
+
+        st.markdown("---")
+        st.markdown("### 📜 Senin Kaydettiğin Özel Tarifler:")
+        try:
+            if os.path.exists("kullanici_tarifleri.txt"):
+                with open("kullanici_tarifleri.txt", "r", encoding="utf-8") as tf:
+                    icerik = tf.read()
+                if icerik.strip():
+                    st.markdown(icerik)
+                else:
+                    st.info("Henüz kendi defterine kaydettiğin bir tarif yok.")
+            else:
+                st.info("Henüz tarif defteri dosyası oluşmadı.")
+        except Exception as e:
+            st.info("Kayıtlar okunurken hata oluştu.")
+
+# --- 4. BÖLÜM: VÜCUT DÖNÜŞÜM & FORM ARŞİVİ ---
 elif menu == "📸 Vücut Dönüşüm & Form Arşivi":
     st.subheader("📸 Vücut Dönüşüm & Form Fotoğraf Arşivi")
     st.write(
@@ -478,7 +618,7 @@ elif menu == "📸 Vücut Dönüşüm & Form Arşivi":
     except Exception as e:
         st.warning("Arşiv yüklenirken bilgi okunamadı.")
 
-# --- 3. BÖLÜM: AI KALORİ & BESLENME ASİSTANI ---
+# --- 5. BÖLÜM: AI KALORİ & BESLENME ASİSTANI ---
 elif menu == "🤖 AI Kalori & Beslenme":
     st.subheader("🤖 Akıllı Besin & Kalori Hesaplayıcı Robot")
 
@@ -921,7 +1061,8 @@ elif menu == "🗑️ Kayıtları Temizle":
             "spor_notlari.txt",
             "kardiyo_kayitlari.txt",
             "recovery_kayitlari.txt",
-            "form_arsiv_meta.txt"
+            "form_arsiv_meta.txt",
+            "kullanici_tarifleri.txt"
         ]
         for dosya in dosyalar:
             with open(dosya, "w", encoding="utf-8") as f:
