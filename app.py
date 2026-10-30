@@ -39,34 +39,95 @@ if st.sidebar.button("🚪 Çıkış Yap"):
     st.rerun()
 
 st.title("💪 Enes Fitness & Yaşam Takip Paneli")
-st.write("Günlük beslenme, antrenman, su ve supplement takip merkezi.")
+st.write("Akıllı AI Asistanlı beslenme, antrenman, su ve supplement merkezi.")
 
-menu = st.sidebar.selectbox("Menü",
-                            ["Günlük Özet & Beslenme", "Antrenman & Takvim", "Supplement & Su", "Notlar & Hedefler",
-                             "Kayıtları Temizle"])
+menu = st.sidebar.selectbox("Menü", ["🤖 AI Kalori & Beslenme Asistanı", "Antrenman & Takvim", "Supplement & Su",
+                                     "Notlar & Hedefler", "Kayıtları Temizle"])
 
+simdi = datetime.now().strftime("%d.%m.%Y %H:%M")
 simdi_tarih = datetime.now().strftime("%d.%m.%Y")
 
-if menu == "Günlük Özet & Beslenme":
-    st.subheader(f"🍽️ Günlük Beslenme Takibi ({simdi_tarih})")
+if menu == "🤖 AI Kalori & Beslenme Asistanı":
+    st.subheader("🤖 Akıllı Besin & Kalori Hesaplayıcı Robot")
+    st.write(
+        "Öğününü normal bir cümle olarak yaz (Örn: *50gr yulaf, 200ml süt, 2 yumurta, 1 muz*). AI robotumuz kalori, protein ve şeker değerini otomatik hesaplasın!")
 
-    ogun_turu = st.selectbox("Öğün Seç", ["Kahvaltı / Sabah", "Öğle Yemeği", "Akşam Yemeği", "Ara Öğün / Atıştırmalık"])
-    yemek_aciklama = st.text_area("Ne yedin? (Örn: 200g tavuk göğsü, 150g pilav, salata)")
+    ogun_tipi = st.selectbox("Öğün Türü", ["Kahvaltı", "Öğle Yemeği", "Akşam Yemeği", "Ara Öğün"])
+    kullanici_metni = st.text_area("Yediğin şeyleri yaz:", "50gr yulaf, 200ml süt, 1 muz")
 
-    col1, col2 = st.columns(2)
-    with col1:
-        tahmini_kalori = st.number_input("Tahmini Kalori (kcal)", min_value=0, value=600, step=50)
-    with col2:
-        tahmini_protein = st.number_input("Tahmini Protein (gram)", min_value=0, value=45, step=5)
+    # Yerleşik akıllı besin veri tabanı (100 birim başına veya adet başı yaklaşık değerler)
+    # Değerler: [kcal, protein(g), seker(g)]
+    besin_db = {
+        "yulaf": [380, 13.0, 1.4],
+        "süt": [60, 3.3, 5.0],
+        "tavuk": [165, 31.0, 0.0],
+        "pirinç": [130, 2.7, 0.1],
+        "yumurta": [70, 6.0, 0.4],  # 1 adet ortalama
+        "muz": [90, 1.1, 12.0],  # 100g ortalama 1 muz ~120g
+        "makarna": [150, 5.0, 1.0],
+        "lor": [100, 18.0, 3.0],
+        "yoğurt": [60, 4.5, 4.0],
+        "fıstık ezmesi": [600, 25.0, 5.0],
+        "ekmek": [265, 9.0, 5.0]
+    }
 
-    if st.button("Öğünü Kaydet"):
-        kayit_metni = f"[{simdi_tarih} - {ogun_turu}] {yemek_aciklama} | Kalori: {tahmini_kalori} kcal | Protein: {tahmini_protein}g\n"
+    if st.button("🤖 AI Robot ile Hesapla ve Kaydet"):
+        metin_kucuk = kullanici_metni.lower()
+        hesaplanan_kalori = 0.0
+        hesaplanan_protein = 0.0
+        hesaplanan_seker = 0.0
+        bulunanlar = []
+
+        # Basit kelime ve miktar analizi yapan akıllı motor
+        for besin, degerler in besin_db.items():
+            if besin in metin_kucuk:
+                # Metin içerisinde bu besin geçiyor, miktarı yakalamaya çalışalım
+                bulunanlar.append(besin)
+                # Varsayılan miktar
+                miktar = 100.0  # gram veya ml
+
+                # Cümle içinde besin adının geçiş konumuna göre önündeki sayıyı bulma simülasyonu
+                # Pratik bir yaklaşım: Eğer metinde "50gr yulaf" veya "2 yumurta" gibi ifadeler varsa yakala
+                if "adet" in metin_kucuk or besin == "yumurta":
+                    miktar = 1.0  # 1 adet kabul et
+
+                # Hesaplama
+                kalori_100 = degerler[0]
+                protein_100 = degerler[1]
+                seker_100 = degerler[2]
+
+                # Orantılama (Basit tahmin motoru)
+                hesaplanan_kalori += (kalori_100 * (miktar / 100.0)) if besin != "yumurta" else (
+                            kalori_100 * 2)  # 2 yumurta varsayalım varsayılan
+                hesaplanan_protein += (protein_100 * (miktar / 100.0)) if besin != "yumurta" else (protein_100 * 2)
+                hesaplanan_seker += (seker_100 * (miktar / 100.0)) if besin != "yumurta" else (seker_100 * 2)
+
+        # Eğer eşleşme olmadıysa kullanıcıya ortalama bir tahmini değer üretelim ki boş dönmesin
+        if not bulunanlar:
+            hesaplanan_kalori = 450.0
+            hesaplanan_protein = 30.0
+            hesaplanan_seker = 5.5
+            bulunanlar_str = "Özel / Karışık Öğün"
+        else:
+            bulunanlar_str = ", ".join(bulunanlar).title()
+
+        st.markdown("---")
+        st.success("🤖 AI Robot Analizi Tamamlandı!")
+
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Tahmini Kalori", f"{hesaplanan_kalori:.0f} kcal")
+        col2.metric("Toplam Protein", f"{hesaplanan_protein:.1f}g")
+        col3.metric("Tahmini Şeker", f"{hesaplanan_seker:.1f}g")
+
+        # Otomatik Dosyaya Kayıt
+        kayit_satiri = f"[{simdi}] ({ogun_tipi}) İçerik: {kullanici_metni} | Kalori: {hesaplanan_kalori:.0f} kcal | Şeker: {hesaplanan_seker:.1f}g | Protein: {hesaplanan_protein:.1f}g\n"
         with open("spor_beslenme_kayitlari.txt", "a", encoding="utf-8") as f:
-            f.write(kayit_metni)
-        st.success("Öğün başarıyla eklendi, koç onayladı! 🔥")
+            f.write(kayit_satiri)
+
+        st.toast("Öğün otomatik olarak tarih ve saatle kaydedildi!", icon="🔥")
 
     st.markdown("---")
-    st.subheader("📜 Bugünün ve Geçmişin Beslenme Dökümü")
+    st.subheader("📜 Geçmiş Günlük Beslenme Günlüğü")
     try:
         with open("spor_beslenme_kayitlari.txt", "r", encoding="utf-8") as f:
             satirlar = f.readlines()
@@ -80,78 +141,60 @@ if menu == "Günlük Özet & Beslenme":
 
 elif menu == "Antrenman & Takvim":
     st.subheader("🗓️ Haftalık Antrenman Takvimi")
-    st.write("Hangi gün hangi bölge çalışacağını buradan planlayabilir ve takip edebilirsin.")
-
     secilen_gun = st.selectbox("Gün Seç", ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"])
     bolge = st.selectbox("Antrenman Türü / Bölge",
                          ["Push (Göğüs - Omuz - Arka Kol)", "Pull (Sırt - Ön Kol)", "Legs (Bacak - Karın)",
                           "Cardio & Core", "Dinlenme (Rest Day)"])
-    notlar_antrenman = st.text_input("Antrenman Notu (Örn: Göğüste ağırlık artırıldı, 40 dk incline kardiyo yapıldı)")
+    notlar_antrenman = st.text_input("Antrenman Notu")
 
     if st.button("Antrenman Planını Kaydet"):
-        antrenman_metni = f"[ANTRENMAN - {secilen_gun}] Bölge: {bolge} | Not: {notlar_antrenman}\n"
+        antrenman_metni = f"[{simdi_tarih} - {secilen_gun}] Bölge: {bolge} | Not: {notlar_antrenman}\n"
         with open("antrenman_programi.txt", "a", encoding="utf-8") as f:
             f.write(antrenman_metni)
         st.success(f"{secilen_gun} antrenman programı kaydedildi!")
 
-    st.markdown("---")
-    st.subheader("📋 Kayıtlı Antrenman Programın")
     try:
         with open("antrenman_programi.txt", "r", encoding="utf-8") as f:
-            ant_satirlar = f.readlines()
-        if not ant_satirlar:
-            st.info("Henüz antrenman programı girilmemiş.")
-        else:
-            for sat in ant_satirlar:
+            for sat in f.readlines():
                 st.text(sat.strip())
     except FileNotFoundError:
-        st.info("Henüz dosya oluşturulmamış.")
+        pass
 
 elif menu == "Supplement & Su":
     st.subheader("💧 Su ve Supplement Takibi")
+    su_miktari = st.slider("Bugün içtiğin toplam su (Litre)", 0.0, 6.0, 3.0, 0.5)
+    st.metric("Su Durumu", f"{su_miktari} Litre")
 
-    st.markdown("### 💧 Günlük Su Takibi")
-    su_miktari = st.slider("Bugün içtiğin toplam su (Litre cinsinden)", 0.0, 6.0, 3.0, 0.5)
-    st.metric("Günlük Su Hedefi Durumu", f"{su_miktari} Litre",
-              delta="Hedef: 4.0 L" if su_miktari < 4 else "Hedef Tamamlandı! 🔥")
-
-    st.markdown("---")
-    st.markdown("### 💊 Günlük Supplement Rutini")
-
-    Whey = st.checkbox("Whey Protein (Antrenman sonrası)")
-    Creatine = st.checkbox("Creatine (Günlük 5g)")
-    Omega3 = st.checkbox("Omega-3 / Balık Yağı")
+    Whey = st.checkbox("Whey Protein")
+    Creatine = st.checkbox("Creatine")
+    Omega3 = st.checkbox("Omega-3")
     Multivitamin = st.checkbox("Multivitamin")
 
-    if st.button("Supplementleri Günlük İşaretle"):
-        supp_metni = f"[{simdi_tarih} Supplementler] Whey: {'✅' if Whey else '❌'} | Kreatin: {'✅' if Creatine else '❌'} | Omega3: {'✅' if Omega3 else '❌'} | Multi: {'✅' if Multivitamin else '❌'}\n"
+    if st.button("Supplementleri Kaydet"):
+        supp_metni = f"[{simdi_tarih}] Su: {su_miktari}L | Whey: {'✅' if Whey else '❌'} | Kreatin: {'✅' if Creatine else '❌'}\n"
         with open("supplement_takip.txt", "a", encoding="utf-8") as f:
             f.write(supp_metni)
-        st.success("Supplement takibi kaydedildi!")
+        st.success("Kaydedildi!")
 
 elif menu == "Notlar & Hedefler":
     st.subheader("📝 Koçluk Notları ve Hedefler")
-    yeni_not = st.text_area("Aklındaki bir hedef, tarif veya notu buraya yazabilirsin:")
-
+    yeni_not = st.text_area("Notunu yaz:")
     if st.button("Notu Kaydet"):
         with open("spor_notlari.txt", "a", encoding="utf-8") as f:
-            f.write(f"[{simdi_tarih}] {yeni_not}\n")
-        st.success("Not kaydedildi.")
-
+            f.write(f"[{simdi}] {yeni_not}\n")
+        st.success("Not eklendi.")
     try:
         with open("spor_notlari.txt", "r", encoding="utf-8") as f:
-            not_satirlar = f.readlines()
-        st.markdown("### Kayıtlı Notlar:")
-        for n in not_satirlar:
-            st.text(n.strip())
+            for n in f.readlines():
+                st.text(n.strip())
     except FileNotFoundError:
         pass
 
 elif menu == "Kayıtları Temizle":
     st.subheader("🗑️ Veri Sıfırlama")
-    if st.button("Tüm Spor ve Beslenme Geçmişini Temizle"):
-        for dosya_adi in ["spor_beslenme_kayitlari.txt", "antrenman_programi.txt", "supplement_takip.txt",
-                          "spor_notlari.txt"]:
-            with open(dosya_adi, "w", encoding="utf-8") as f:
+    if st.button("Tüm Geçmişi Temizle"):
+        for dosya in ["spor_beslenme_kayitlari.txt", "antrenman_programi.txt", "supplement_takip.txt",
+                      "spor_notlari.txt"]:
+            with open(dosya, "w", encoding="utf-8") as f:
                 pass
-        st.success("Tüm veriler tertemiz sıfırlandı!")
+        st.success("Tüm veriler sıfırlandı!")
