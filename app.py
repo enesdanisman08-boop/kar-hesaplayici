@@ -3,7 +3,7 @@ import os
 import time
 import streamlit as st
 
-# Sayfa Ayarları ve Mobil PWA Entegrasyonu (Geniş ekran modu 'wide' ile orta alan boşlukları dengeleniyor)
+# Sayfa Ayarları ve Mobil PWA Entegrasyonu
 st.set_page_config(page_title="Enes Spor & Yaşam Paneli", page_icon="💪", layout="wide")
 
 st.markdown("""
@@ -13,7 +13,7 @@ st.markdown("""
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 """, unsafe_allow_html=True)
 
-# --- KULLANICI GİRİŞ SİSTEMİ (EFSANE SPORCU DUVAR KAĞITLI) ---
+# --- KULLANICI GİRİŞ SİSTEMİ ---
 if "giris_yapildi" not in st.session_state:
     st.session_state["giris_yapildi"] = False
 
@@ -321,50 +321,56 @@ elif secilen_tema == "⚪ Clean White (Ferah Beyaz)":
 simdi = datetime.now().strftime("%d.%m.%Y %H:%M")
 simdi_tarih = datetime.now().strftime("%d.%m.%Y")
 
-# --- YENİ BÖLÜM: ANA MENÜ (KOMUTA MERKEZİ) ---
+# --- YENİ BÖLÜM: ANA MENÜ (KUTU TASARIMLI KOMUTA MERKEZİ) ---
 if menu == "🏠 Ana Menü (Komuta Merkezi)":
     st.title("💪 Enes Fitness & Yaşam Komuta Merkezi")
     st.write("84 kg (%16 Yağ) ➡️ 80.5 kg (%11 Yağ) Kas Korumalı Definasyon Kampına Hoş Geldin!")
 
     st.markdown("---")
     st.subheader("🚀 Hızlı Erişim & Ana Menü")
-    st.caption("Aşağıdaki kartlardan gitmek istediğin bölüme anında geçiş yapabilirsin:")
+    st.caption("Aşağıdaki şık kutulardan gitmek istediğin bölüme anında göz atabilirsin:")
 
-    # 3'lü kolonlar halinde şık kartlar
+    # 3'lü kolonlar halinde kartlar
     c1, c2, c3 = st.columns(3)
 
     with c1:
-        st.markdown("### 📅 30 Günlük Kamp")
-        st.write("Günlük rotasyon menüleri, kalori takibi ve akşam check-in sistemi.")
-        if st.button("Kamp Paneline Git ➡️", use_container_width=True, key="btn_kamp"):
-            st.info("Sol menüden '30 Günlük Diyet & Takvim' seçebilirsin!")
+        with st.container(border=True):
+            st.markdown("### 📅 30 Günlük Kamp")
+            st.write("Günlük rotasyon menüleri, kalori takibi ve akşam check-in sistemi.")
+            if st.button("Kamp Paneline Git ➡️", use_container_width=True, key="btn_kamp"):
+                st.info("Sol menüden '30 Günlük Diyet & Takvim' seçebilirsin!")
 
-        st.markdown("### 🍳 Tarif & Mutfak")
-        st.write("Profesyonel sporcu tarifleri ve kendi defterine not ettiklerin.")
-        if st.button("Tariflere Git ➡️", use_container_width=True, key="btn_tarif"):
-            st.info("Sol menüden 'Sporcu Tarif & Mutfak Defteri' seçebilirsin!")
+        with st.container(border=True):
+            st.markdown("### 🍳 Tarif & Mutfak")
+            st.write("Profesyonel sporcu tarifleri ve kendi defterine not ettiklerin.")
+            if st.button("Tariflere Git ➡️", use_container_width=True, key="btn_tarif"):
+                st.info("Sol menüden 'Sporcu Tarif & Mutfak Defteri' seçebilirsin!")
 
     with c2:
-        st.markdown("### 📸 Form Arşivi")
-        st.write("Haftalık form fotoğraflarını yükle, kilo ve yağ değişimini incele.")
-        if st.button("Arşive Git ➡️", use_container_width=True, key="btn_arsiv"):
-            st.info("Sol menüden 'Vücut Dönüşüm & Form Arşivi' seçebilirsin!")
+        with st.container(border=True):
+            st.markdown("### 📸 Form Arşivi")
+            st.write("Haftalık form fotoğraflarını yükle, kilo ve yağ değişimini incele.")
+            if st.button("Arşive Git ➡️", use_container_width=True, key="btn_arsiv"):
+                st.info("Sol menüden 'Vücut Dönüşüm & Form Arşivi' seçebilirsin!")
 
-        st.markdown("### 🤖 AI Kalori Asistanı")
-        st.write("Yediğin öğünleri yaz, kalori ve protein değerini anında hesaplasın.")
-        if st.button("AI Asistana Git ➡️", use_container_width=True, key="btn_ai"):
-            st.info("Sol menüden 'AI Kalori & Beslenme' seçebilirsin!")
+        with st.container(border=True):
+            st.markdown("### 🤖 AI Kalori Asistanı")
+            st.write("Yediğin öğünleri yaz, kalori ve protein değerini anında hesaplasın.")
+            if st.button("AI Asistana Git ➡️", use_container_width=True, key="btn_ai"):
+                st.info("Sol menüden 'AI Kalori & Beslenme' seçebilirsin!")
 
     with c3:
-        st.markdown("### 🔥 Kardiyo & Yağ Yakım")
-        st.write("Eğimli yürüyüşte (Incline Treadmill) yaktığın saf yağı hesapla.")
-        if st.button("Kardiyoya Git ➡️", use_container_width=True, key="btn_kardiyo"):
-            st.info("Sol menüden 'Kardiyo & Yağ Yakım Hesaplayıcı' seçebilirsin!")
+        with st.container(border=True):
+            st.markdown("### 🔥 Kardiyo & Yağ Yakım")
+            st.write("Eğimli yürüyüşte (Incline Treadmill) yaktığın saf yağı hesapla.")
+            if st.button("Kardiyoya Git ➡️", use_container_width=True, key="btn_kardiyo"):
+                st.info("Sol menüden 'Kardiyo & Yağ Yakım Hesaplayıcı' seçebilirsin!")
 
-        st.markdown("### 🏋️‍♂️ Ağırlık & PR Takibi")
-        st.write("Salonda bastığın ağırlıkları, ön/arka kol rekorlarını kaydet.")
-        if st.button("PR Takibine Git ➡️", use_container_width=True, key="btn_pr"):
-            st.info("Sol menüden 'Ağırlık & PR Takibi' seçebilirsin!")
+        with st.container(border=True):
+            st.markdown("### 🏋️‍♂️ Ağırlık & PR Takibi")
+            st.write("Salonda bastığın ağırlıkları, ön/arka kol rekorlarını kaydet.")
+            if st.button("PR Takibine Git ➡️", use_container_width=True, key="btn_pr"):
+                st.info("Sol menüden 'Ağırlık & PR Takibi' seçebilirsin!")
 
     st.markdown("---")
     st.info(
