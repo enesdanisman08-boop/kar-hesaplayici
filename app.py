@@ -6,12 +6,35 @@ import streamlit as st
 # Sayfa Ayarları ve Mobil PWA Entegrasyonu
 st.set_page_config(page_title="Enes Spor & Yaşam Paneli", page_icon="💪", layout="wide")
 
-# --- KULLANICI GİRİŞ SİSTEMİ ---
+# --- OTURUM VE SAYFA HAFIZASI (SESSION STATE) ---
 if "giris_yapildi" not in st.session_state:
     st.session_state["giris_yapildi"] = False
 
 if "secilen_tema" not in st.session_state:
     st.session_state["secilen_tema"] = "🌙 Koyu Mod"
+
+if "aktif_sayfa" not in st.session_state:
+    st.session_state["aktif_sayfa"] = "🏠 Ana Menü (Komuta Merkezi)"
+
+SAYFA_LISTESI = [
+    "🏠 Ana Menü (Komuta Merkezi)",
+    "📅 30 Günlük Diyet & Takvim",
+    "🍳 Sporcu Tarif & Mutfak Defteri",
+    "📸 Vücut Dönüşüm & Form Arşivi",
+    "🤖 AI Kalori & Beslenme",
+    "🔥 Kardiyo & Yağ Yakım Hesaplayıcı",
+    "💤 Uyku & Toparlanma (Recovery)",
+    "🗓️ Antrenman & PPL Takvimi",
+    "🏋️‍♂️ Ağırlık & PR Takibi",
+    "💧 Supplement & Su",
+    "📝 Notlar & Hedefler",
+    "🗑️ Kayıtları Temizle"
+]
+
+
+def sayfa_degistir(hedef_sayfa):
+    st.session_state["aktif_sayfa"] = hedef_sayfa
+
 
 ICERDEKILER = {
     "enes": "1453",
@@ -82,27 +105,21 @@ if not st.session_state["giris_yapildi"]:
 
     st.stop()
 
-# --- SAĞ ÜST KÖŞE MOD SEÇİCİ & SOL MENÜ ---
-
+# --- SOL MENÜ (SIDEBAR) ---
 with st.sidebar:
     st.markdown("## 🧭 Navigasyon")
-    menu = st.selectbox(
+    secilen_menu = st.selectbox(
         "Gitmek İstediğin Bölüm:",
-        [
-            "🏠 Ana Menü (Komuta Merkezi)",
-            "📅 30 Günlük Diyet & Takvim",
-            "🍳 Sporcu Tarif & Mutfak Defteri",
-            "📸 Vücut Dönüşüm & Form Arşivi",
-            "🤖 AI Kalori & Beslenme",
-            "🔥 Kardiyo & Yağ Yakım Hesaplayıcı",
-            "💤 Uyku & Toparlanma (Recovery)",
-            "🗓️ Antrenman & PPL Takvimi",
-            "🏋️‍♂️ Ağırlık & PR Takibi",
-            "💧 Supplement & Su",
-            "📝 Notlar & Hedefler",
-            "🗑️ Kayıtları Temizle"
-        ]
+        SAYFA_LISTESI,
+        index=SAYFA_LISTESI.index(st.session_state["aktif_sayfa"])
     )
+
+    # Sol menüden seçim değişirse aktif sayfayı güncelle
+    if secilen_menu != st.session_state["aktif_sayfa"]:
+        st.session_state["aktif_sayfa"] = secilen_menu
+        st.rerun()
+
+    menu = st.session_state["aktif_sayfa"]
 
     st.markdown("---")
 
@@ -142,12 +159,16 @@ with st.sidebar:
         st.session_state["giris_yapildi"] = False
         st.rerun()
 
-# --- SAĞ ÜST KÖŞE GÖRÜNÜM KONTROLÜ ---
+# --- SAĞ ÜST KÖŞE GÖRÜNÜM KONTROLÜ & ANA MENÜYE DÖNÜŞ ---
 top_col1, top_col2 = st.columns([6, 2])
+with top_col1:
+    if menu != "🏠 Ana Menü (Komuta Merkezi)":
+        st.button("⬅️ Ana Menüye Dön", on_click=sayfa_degistir, args=("🏠 Ana Menü (Komuta Merkezi)",))
 with top_col2:
     st.session_state["secilen_tema"] = st.selectbox(
         "Görünüm Modu:",
         ["🌙 Koyu Mod", "☀️ Açık Mod", "💻 PC Teması (Neon Yeşil)"],
+        index=["🌙 Koyu Mod", "☀️ Açık Mod", "💻 PC Teması (Neon Yeşil)"].index(st.session_state["secilen_tema"]),
         label_visibility="collapsed"
     )
 
@@ -166,10 +187,12 @@ if secilen_tema == "🌙 Koyu Mod":
             border: 1px solid #30363d !important;
             border-radius: 12px !important;
             padding: 20px !important;
-            margin-bottom: 20px !important;
+            margin-bottom: 12px !important;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
             color: #fafafa !important;
         }
+        .custom-card h3 { color: #ffffff !important; margin-top: 0 !important; }
+        .custom-card p { color: #cbd5e1 !important; margin-bottom: 0 !important; }
         </style>
     """, unsafe_allow_html=True)
 
@@ -177,17 +200,22 @@ elif secilen_tema == "☀️ Açık Mod":
     st.markdown("""
         <style>
         .stApp { background-color: #f8fafc; color: #0f172a; }
-        div[data-testid="stMetric"] { background-color: #ffffff; border: 1px solid #cbd5e1; padding: 12px; border-radius: 10px; }
+        .stApp h1, .stApp h2, .stApp h3, .stApp p, .stApp span, .stApp label { color: #0f172a !important; }
+        div[data-testid="stSidebar"] { background-color: #f1f5f9 !important; }
+        div[data-testid="stMetric"] { background-color: #ffffff; border: 1px solid #cbd5e1; padding: 12px; border-radius: 10px; color: #0f172a !important; }
         .stButton>button { background-color: #0284c7 !important; color: #ffffff !important; font-weight: bold !important; border-radius: 8px !important; border: none !important; }
+        .stButton>button p { color: #ffffff !important; }
         .custom-card {
             background-color: #ffffff !important;
-            border: 1px solid #cbd5e1 !important;
+            border: 2px solid #cbd5e1 !important;
             border-radius: 12px !important;
             padding: 20px !important;
-            margin-bottom: 20px !important;
+            margin-bottom: 12px !important;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
             color: #0f172a !important;
         }
+        .custom-card h3 { color: #0f172a !important; margin-top: 0 !important; }
+        .custom-card p { color: #334155 !important; margin-bottom: 0 !important; }
         </style>
     """, unsafe_allow_html=True)
 
@@ -202,24 +230,26 @@ elif secilen_tema == "💻 PC Teması (Neon Yeşil)":
             border: 1px solid #00ff88 !important;
             border-radius: 12px !important;
             padding: 20px !important;
-            margin-bottom: 20px !important;
+            margin-bottom: 12px !important;
             box-shadow: 0 0 10px rgba(0, 255, 136, 0.15) !important;
             color: #e0f2e9 !important;
         }
+        .custom-card h3 { color: #00ff88 !important; margin-top: 0 !important; }
+        .custom-card p { color: #e0f2e9 !important; margin-bottom: 0 !important; }
         </style>
     """, unsafe_allow_html=True)
 
 simdi = datetime.now().strftime("%d.%m.%Y %H:%M")
 simdi_tarih = datetime.now().strftime("%d.%m.%Y")
 
-# --- ANA MENÜ ---
+# --- ANA MENÜ (KOMUTA MERKEZİ) ---
 if menu == "🏠 Ana Menü (Komuta Merkezi)":
     st.title("💪 Enes Fitness & Yaşam Komuta Merkezi")
     st.write("84 kg (%16 Yağ) ➡️ 80.5 kg (%11 Yağ) Kas Korumalı Definasyon Kampına Hoş Geldin!")
 
     st.markdown("---")
     st.subheader("🚀 Hızlı Erişim & Ana Menü")
-    st.caption("Aşağıdaki şık kutulardan gitmek istediğin bölüme anında göz atabilirsin:")
+    st.caption("Aşağıdaki kutuların altındaki butonlara tıkladığın an doğrudan o bölüme ışınlanırsın:")
 
     c1, c2, c3 = st.columns(3)
 
@@ -230,17 +260,28 @@ if menu == "🏠 Ana Menü (Komuta Merkezi)":
                 <p>Günlük rotasyon menüleri, kalori takibi ve akşam check-in sistemi.</p>
             </div>
         """, unsafe_allow_html=True)
-        if st.button("Kamp Paneline Git ➡️", use_container_width=True, key="btn_kamp"):
-            st.info("Sol menüden '30 Günlük Diyet & Takvim' seçebilirsin!")
+        st.button("Kamp Paneline Git ➡️", use_container_width=True, key="btn_kamp", on_click=sayfa_degistir,
+                  args=("📅 30 Günlük Diyet & Takvim",))
 
+        st.write("")
         st.markdown("""
             <div class="custom-card">
                 <h3>🍳 Tarif & Mutfak</h3>
                 <p>Profesyonel sporcu tarifleri ve kendi defterine not ettiklerin.</p>
             </div>
         """, unsafe_allow_html=True)
-        if st.button("Tariflere Git ➡️", use_container_width=True, key="btn_tarif"):
-            st.info("Sol menüden 'Sporcu Tarif & Mutfak Defteri' seçebilirsin!")
+        st.button("Tariflere Git ➡️", use_container_width=True, key="btn_tarif", on_click=sayfa_degistir,
+                  args=("🍳 Sporcu Tarif & Mutfak Defteri",))
+
+        st.write("")
+        st.markdown("""
+            <div class="custom-card">
+                <h3>💤 Uyku & Recovery</h3>
+                <p>Uyku kaliteni ve kas ağrılarını gir, günlük antrenman temposunu öğren.</p>
+            </div>
+        """, unsafe_allow_html=True)
+        st.button("Recovery Analizine Git ➡️", use_container_width=True, key="btn_rec", on_click=sayfa_degistir,
+                  args=("💤 Uyku & Toparlanma (Recovery)",))
 
     with c2:
         st.markdown("""
@@ -249,17 +290,28 @@ if menu == "🏠 Ana Menü (Komuta Merkezi)":
                 <p>Haftalık form fotoğraflarını yükle, kilo ve yağ değişimini incele.</p>
             </div>
         """, unsafe_allow_html=True)
-        if st.button("Arşive Git ➡️", use_container_width=True, key="btn_arsiv"):
-            st.info("Sol menüden 'Vücut Dönüşüm & Form Arşivi' seçebilirsin!")
+        st.button("Arşive Git ➡️", use_container_width=True, key="btn_arsiv", on_click=sayfa_degistir,
+                  args=("📸 Vücut Dönüşüm & Form Arşivi",))
 
+        st.write("")
         st.markdown("""
             <div class="custom-card">
                 <h3>🤖 AI Kalori Asistanı</h3>
                 <p>Yediğin öğünleri yaz, kalori ve protein değerini anında hesaplasın.</p>
             </div>
         """, unsafe_allow_html=True)
-        if st.button("AI Asistana Git ➡️", use_container_width=True, key="btn_ai"):
-            st.info("Sol menüden 'AI Kalori & Beslenme' seçebilirsin!")
+        st.button("AI Asistana Git ➡️", use_container_width=True, key="btn_ai", on_click=sayfa_degistir,
+                  args=("🤖 AI Kalori & Beslenme",))
+
+        st.write("")
+        st.markdown("""
+            <div class="custom-card">
+                <h3>🗓️ PPL Antrenman Takvimi</h3>
+                <p>Haftalık Push-Pull-Legs günlerini ve antrenman notlarını kaydet.</p>
+            </div>
+        """, unsafe_allow_html=True)
+        st.button("PPL Takvimine Git ➡️", use_container_width=True, key="btn_ppl", on_click=sayfa_degistir,
+                  args=("🗓️ Antrenman & PPL Takvimi",))
 
     with c3:
         st.markdown("""
@@ -268,17 +320,28 @@ if menu == "🏠 Ana Menü (Komuta Merkezi)":
                 <p>Eğimli yürüyüşte (Incline Treadmill) yaktığın saf yağı hesapla.</p>
             </div>
         """, unsafe_allow_html=True)
-        if st.button("Kardiyoya Git ➡️", use_container_width=True, key="btn_kardiyo"):
-            st.info("Sol menüden 'Kardiyo & Yağ Yakım Hesaplayıcı' seçebilirsin!")
+        st.button("Kardiyoya Git ➡️", use_container_width=True, key="btn_kardiyo", on_click=sayfa_degistir,
+                  args=("🔥 Kardiyo & Yağ Yakım Hesaplayıcı",))
 
+        st.write("")
         st.markdown("""
             <div class="custom-card">
                 <h3>🏋️‍♂️ Ağırlık & PR Takibi</h3>
                 <p>Salonda bastığın ağırlıkları, ön/arka kol rekorlarını kaydet.</p>
             </div>
         """, unsafe_allow_html=True)
-        if st.button("PR Takibine Git ➡️", use_container_width=True, key="btn_pr"):
-            st.info("Sol menüden 'Ağırlık & PR Takibi' seçebilirsin!")
+        st.button("PR Takibine Git ➡️", use_container_width=True, key="btn_pr", on_click=sayfa_degistir,
+                  args=("🏋️‍♂️ Ağırlık & PR Takibi",))
+
+        st.write("")
+        st.markdown("""
+            <div class="custom-card">
+                <h3>💧 Supplement & Su</h3>
+                <p>Günlük 4 litre su hedefini ve Whey, Kreatin, Omega-3 kullanımını işaretle.</p>
+            </div>
+        """, unsafe_allow_html=True)
+        st.button("Supplement Takibine Git ➡️", use_container_width=True, key="btn_supp", on_click=sayfa_degistir,
+                  args=("💧 Supplement & Su",))
 
     st.markdown("---")
     st.info(
