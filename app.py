@@ -1,11 +1,10 @@
 from datetime import datetime
 import os
 import time
-import base64
 import streamlit as st
 
 # Sayfa Ayarları ve Mobil PWA Entegrasyonu
-st.set_page_config(page_title="Enes Spor & Yaşam Paneli", page_icon="💪", layout="wide")
+st.set_page_config(page_title="GYM HUB | Enes Spor Paneli", page_icon="⚡", layout="wide")
 
 # --- OTURUM VE SAYFA HAFIZASI (SESSION STATE) ---
 if "giris_yapildi" not in st.session_state:
@@ -44,18 +43,6 @@ def tema_degistir():
         st.session_state["secilen_tema"] = "Koyu"
 
 
-# Bilgisayarındaki resmi arka plana çeviren fonksiyon (arkaplan.jpg veya arkaplan.png varsa kullanır)
-def arkaplan_ayarla():
-    for dosya in ["arkaplan.jpg", "arkaplan.jpeg", "arkaplan.png"]:
-        if os.path.exists(dosya):
-            with open(dosya, "rb") as f:
-                data = f.read()
-            bin_str = base64.b64encode(data).decode()
-            return f"linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.80)), url('data:image/jpeg;base64,{bin_str}')"
-    # Klasörde resim yoksa varsayılan modern koyu geçişli arka plan
-    return "radial-gradient(circle at center, #1e293b 0%, #0f172a 50%, #020617 100%)"
-
-
 ICERDEKILER = {
     "enes": "1453",
     "admin": "admin"
@@ -63,82 +50,88 @@ ICERDEKILER = {
 
 # Üstteki GitHub, Share, Yıldız ve Sağ Alttaki Manage App butonlarını gizleyen genel CSS
 gizleme_css = """
-    /* Sağ üstteki Share, Yıldız, GitHub ikonlarını ve üç noktayı gizle */
-    [data-testid="stToolbarActions"],
-    [data-testid="stAppDeployButton"],
-    #MainMenu,
-    footer {
-        display: none !important;
-        visibility: hidden !important;
-    }
-    /* Üst barın siyah arka planını şeffaf yap (Sol menü açma/kapama oku bozulmasın diye) */
-    header[data-testid="stHeader"] {
-        background: transparent !important;
-    }
+[data-testid="stToolbarActions"],
+[data-testid="stAppDeployButton"],
+#MainMenu,
+footer {
+    display: none !important;
+    visibility: hidden !important;
+}
+header[data-testid="stHeader"] {
+    background: transparent !important;
+}
 """
 
+# --- MİNİMALİST GYM HUB GİRİŞ EKRANI ---
 if not st.session_state["giris_yapildi"]:
-    bg_style = arkaplan_ayarla()
     st.markdown(f"""
-        <style>
-        {gizleme_css}
-        .stApp {{
-            background-image: {bg_style};
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-        }}
-        .login-container {{
-            background: rgba(13, 17, 23, 0.85);
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(79, 70, 229, 0.6);
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
-            text-align: center;
-            max-width: 450px;
-            margin: 20px auto;
-        }}
-        .login-title {{
-            color: #ffffff;
-            font-size: 26px;
-            font-weight: bold;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }}
-        .login-subtitle {{
-            color: #38bdf8;
-            font-size: 13px;
-            margin-bottom: 20px;
-            font-weight: 600;
-        }}
-        </style>
+<style>
+{gizleme_css}
+.stApp {{
+    background: radial-gradient(circle at top, #181c24 0%, #0b0e14 100%);
+    color: #f8fafc;
+}}
+div[data-testid="stForm"] {{
+    background-color: #12161f !important;
+    border: 1px solid #262c3a !important;
+    border-radius: 18px !important;
+    padding: 35px 30px !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6) !important;
+    margin-top: 60px !important;
+}}
+.gymhub-logo {{
+    font-size: 32px;
+    font-weight: 800;
+    text-align: center;
+    letter-spacing: 2px;
+    color: #ffffff;
+    margin-bottom: 4px;
+}}
+.gymhub-logo span {{
+    color: #6366f1;
+}}
+.gymhub-welcome {{
+    text-align: center;
+    color: #94a3b8;
+    font-size: 14px;
+    margin-bottom: 25px;
+    font-weight: 500;
+}}
+.stButton>button {{
+    background: linear-gradient(90deg, #4f46e5 0%, #6366f1 100%) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    border-radius: 10px !important;
+    height: 44px !important;
+    border: none !important;
+    margin-top: 10px !important;
+}}
+.stButton>button:hover {{
+    opacity: 0.92 !important;
+}}
+</style>
+""", unsafe_allow_html=True)
 
-        <div class="login-container">
-            <div class="login-title">🔥 ENES FITNESS MERKEZİ</div>
-            <div class="login-subtitle">84 kg ➡️ 80.5 kg Kas Korumalı Definasyon Kampı</div>
-        </div>
-    """, unsafe_allow_html=True)
-
-    col1, col2, col3 = st.columns([1, 2, 1])
+    # Dar ve minimal bir orta kolon
+    col1, col2, col3 = st.columns([1.3, 1.4, 1.3])
     with col2:
         with st.form("giris_formu"):
-            st.markdown("### 🔐 Güvenli Giriş")
-            k_adi = st.text_input("Kullanıcı Adı").strip().lower()
-            sifre = st.text_input("Parola", type="password")
-            buton = st.form_submit_button("🚀 Panele Giriş Yap", use_container_width=True)
+            st.markdown('<div class="gymhub-logo">⚡ GYM<span>HUB</span></div>', unsafe_allow_html=True)
+            st.markdown('<div class="gymhub-welcome">Hoş Geldiniz • Sporcu Komuta Merkezi</div>',
+                        unsafe_allow_html=True)
+
+            k_adi = st.text_input("Sporcu Kimliği", placeholder="Sporcu Adı (Örn: enes)",
+                                  label_visibility="collapsed").strip().lower()
+            sifre = st.text_input("Erişim Şifresi", type="password", placeholder="Erişim Parolası",
+                                  label_visibility="collapsed")
+            buton = st.form_submit_button("Giriş Yap →", use_container_width=True)
 
             if buton:
                 if k_adi in ICERDEKILER and ICERDEKILER[k_adi] == sifre:
                     st.session_state["giris_yapildi"] = True
-                    st.success("Giriş başarılı, demirleri kaldırmaya hazır ol! 💪")
                     st.rerun()
                 else:
-                    st.error("❌ Hatalı kullanıcı adı veya parola!")
-
-        st.info("💡 **Hedef Hatırlatması:** Günlük 2250 kcal | 185g+ Protein | 4L Su")
+                    st.error("❌ Kimlik veya parola hatalı!")
 
     st.stop()
 
@@ -201,7 +194,6 @@ with top_col1:
     if menu != "🏠 Ana Menü (Komuta Merkezi)":
         st.button("⬅️ Ana Menüye Dön", on_click=sayfa_degistir, args=("🏠 Ana Menü (Komuta Merkezi)",))
 with top_col2:
-    # Koyu moddaysa Güneş (☀️), Açık moddaysa Ay (🌙) ikonu gösterir
     tema_ikonu = "☀️" if st.session_state["secilen_tema"] == "Koyu" else "🌙"
     st.button(tema_ikonu, key="tema_btn", on_click=tema_degistir)
 
@@ -210,88 +202,86 @@ secilen_tema = st.session_state["secilen_tema"]
 # --- DİNAMİK TEMA VE YUVARLAK BUTON STİLLERİ ---
 
 ortak_css = f"""
-    {gizleme_css}
-    /* Sayfanın üst boşluğunu ideal hizaya getirme (buton kesilmesin diye 3.5rem yapıldı) */
-    .block-container {{
-        padding-top: 3.5rem !important;
-    }}
-    /* Sağ üstteki tema butonunu tam yuvarlak, biraz daha aşağıda ve sağ köşede tutma */
-    div.st-key-tema_btn {{
-        display: flex;
-        justify-content: flex-end;
-        margin-top: 10px !important;
-        margin-right: 15px !important;
-    }}
-    div.st-key-tema_btn button {{
-        border-radius: 50% !important;
-        width: 50px !important;
-        height: 50px !important;
-        min-height: 50px !important;
-        padding: 0 !important;
-        font-size: 24px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        box-shadow: 0 4px 14px rgba(0,0,0,0.35) !important;
-        transition: transform 0.2s ease !important;
-    }}
-    div.st-key-tema_btn button:hover {{
-        transform: scale(1.1) !important;
-    }}
+{gizleme_css}
+.block-container {{
+    padding-top: 3.5rem !important;
+}}
+div.st-key-tema_btn {{
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px !important;
+    margin-right: 15px !important;
+}}
+div.st-key-tema_btn button {{
+    border-radius: 50% !important;
+    width: 50px !important;
+    height: 50px !important;
+    min-height: 50px !important;
+    padding: 0 !important;
+    font-size: 24px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.35) !important;
+    transition: transform 0.2s ease !important;
+}}
+div.st-key-tema_btn button:hover {{
+    transform: scale(1.1) !important;
+}}
 """
 
 if secilen_tema == "Koyu":
     st.markdown(f"""
-        <style>
-        {ortak_css}
-        .stApp {{ background-color: #0e1117; color: #fafafa; }}
-        div[data-testid="stMetric"] {{ background-color: #262730; border: 1px solid #4f46e5; padding: 12px; border-radius: 10px; }}
-        .stButton>button {{ background-color: #4f46e5 !important; color: #ffffff !important; font-weight: bold !important; border-radius: 8px !important; border: none !important; }}
-        div.st-key-tema_btn button {{
-            background-color: #1e293b !important;
-            border: 2px solid #4f46e5 !important;
-        }}
-        .custom-card {{
-            background-color: #161b22 !important;
-            border: 1px solid #30363d !important;
-            border-radius: 12px !important;
-            padding: 20px !important;
-            margin-bottom: 12px !important;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
-            color: #fafafa !important;
-        }}
-        .custom-card h3 {{ color: #ffffff !important; margin-top: 0 !important; }}
-        .custom-card p {{ color: #cbd5e1 !important; margin-bottom: 0 !important; }}
-        </style>
-    """, unsafe_allow_html=True)
+<style>
+{ortak_css}
+.stApp {{ background-color: #0e1117; color: #fafafa; }}
+div[data-testid="stMetric"] {{ background-color: #262730; border: 1px solid #4f46e5; padding: 12px; border-radius: 10px; }}
+.stButton>button {{ background-color: #4f46e5 !important; color: #ffffff !important; font-weight: bold !important; border-radius: 8px !important; border: none !important; }}
+div.st-key-tema_btn button {{
+    background-color: #1e293b !important;
+    border: 2px solid #4f46e5 !important;
+}}
+.custom-card {{
+    background-color: #161b22 !important;
+    border: 1px solid #30363d !important;
+    border-radius: 12px !important;
+    padding: 20px !important;
+    margin-bottom: 12px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    color: #fafafa !important;
+}}
+.custom-card h3 {{ color: #ffffff !important; margin-top: 0 !important; }}
+.custom-card p {{ color: #cbd5e1 !important; margin-bottom: 0 !important; }}
+</style>
+""", unsafe_allow_html=True)
 
 else:  # Açık Mod
     st.markdown(f"""
-        <style>
-        {ortak_css}
-        .stApp {{ background-color: #f8fafc; color: #0f172a; }}
-        .stApp h1, .stApp h2, .stApp h3, .stApp p, .stApp span, .stApp label {{ color: #0f172a !important; }}
-        div[data-testid="stSidebar"] {{ background-color: #f1f5f9 !important; }}
-        div[data-testid="stMetric"] {{ background-color: #ffffff; border: 1px solid #cbd5e1; padding: 12px; border-radius: 10px; color: #0f172a !important; }}
-        .stButton>button {{ background-color: #0284c7 !important; color: #ffffff !important; font-weight: bold !important; border-radius: 8px !important; border: none !important; }}
-        .stButton>button p {{ color: #ffffff !important; }}
-        div.st-key-tema_btn button {{
-            background-color: #ffffff !important;
-            border: 2px solid #0284c7 !important;
-        }}
-        .custom-card {{
-            background-color: #ffffff !important;
-            border: 2px solid #cbd5e1 !important;
-            border-radius: 12px !important;
-            padding: 20px !important;
-            margin-bottom: 12px !important;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
-            color: #0f172a !important;
-        }}
-        .custom-card h3 {{ color: #0f172a !important; margin-top: 0 !important; }}
-        .custom-card p {{ color: #334155 !important; margin-bottom: 0 !important; }}
-        </style>
-    """, unsafe_allow_html=True)
+<style>
+{ortak_css}
+.stApp {{ background-color: #f8fafc; color: #0f172a; }}
+.stApp h1, .stApp h2, .stApp h3, .stApp p, .stApp span, .stApp label {{ color: #0f172a !important; }}
+div[data-testid="stSidebar"] {{ background-color: #f1f5f9 !important; }}
+div[data-testid="stMetric"] {{ background-color: #ffffff; border: 1px solid #cbd5e1; padding: 12px; border-radius: 10px; color: #0f172a !important; }}
+.stButton>button {{ background-color: #0284c7 !important; color: #ffffff !important; font-weight: bold !important; border-radius: 8px !important; border: none !important; }}
+.stButton>button p {{ color: #ffffff !important; }}
+div.st-key-tema_btn button {{
+    background-color: #ffffff !important;
+    border: 2px solid #0284c7 !important;
+}}
+.custom-card {{
+    background-color: #ffffff !important;
+    border: 2px solid #cbd5e1 !important;
+    border-radius: 12px !important;
+    padding: 20px !important;
+    margin-bottom: 12px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+    color: #0f172a !important;
+}}
+.custom-card h3 {{ color: #0f172a !important; margin-top: 0 !important; }}
+.custom-card p {{ color: #334155 !important; margin-bottom: 0 !important; }}
+</style>
+""", unsafe_allow_html=True)
 
 simdi = datetime.now().strftime("%d.%m.%Y %H:%M")
 simdi_tarih = datetime.now().strftime("%d.%m.%Y")
@@ -308,92 +298,65 @@ if menu == "🏠 Ana Menü (Komuta Merkezi)":
     c1, c2, c3 = st.columns(3)
 
     with c1:
-        st.markdown("""
-            <div class="custom-card">
-                <h3>📅 30 Günlük Kamp</h3>
-                <p>Günlük rotasyon menüleri, kalori takibi ve akşam check-in sistemi.</p>
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown(
+            '<div class="custom-card"><h3>📅 30 Günlük Kamp</h3><p>Günlük rotasyon menüleri, kalori takibi ve akşam check-in sistemi.</p></div>',
+            unsafe_allow_html=True)
         st.button("Kamp Paneline Git ➡️", use_container_width=True, key="btn_kamp", on_click=sayfa_degistir,
                   args=("📅 30 Günlük Diyet & Takvim",))
 
         st.write("")
-        st.markdown("""
-            <div class="custom-card">
-                <h3>🍳 Tarif & Mutfak</h3>
-                <p>Profesyonel sporcu tarifleri ve kendi defterine not ettiklerin.</p>
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown(
+            '<div class="custom-card"><h3>🍳 Tarif & Mutfak</h3><p>Profesyonel sporcu tarifleri ve kendi defterine not ettiklerin.</p></div>',
+            unsafe_allow_html=True)
         st.button("Tariflere Git ➡️", use_container_width=True, key="btn_tarif", on_click=sayfa_degistir,
                   args=("🍳 Sporcu Tarif & Mutfak Defteri",))
 
         st.write("")
-        st.markdown("""
-            <div class="custom-card">
-                <h3>💤 Uyku & Recovery</h3>
-                <p>Uyku kaliteni ve kas ağrılarını gir, günlük antrenman temposunu öğren.</p>
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown(
+            '<div class="custom-card"><h3>💤 Uyku & Recovery</h3><p>Uyku kaliteni ve kas ağrılarını gir, günlük antrenman temposunu öğren.</p></div>',
+            unsafe_allow_html=True)
         st.button("Recovery Analizine Git ➡️", use_container_width=True, key="btn_rec", on_click=sayfa_degistir,
                   args=("💤 Uyku & Toparlanma (Recovery)",))
 
     with c2:
-        st.markdown("""
-            <div class="custom-card">
-                <h3>📸 Form Arşivi</h3>
-                <p>Haftalık form fotoğraflarını yükle, kilo ve yağ değişimini incele.</p>
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown(
+            '<div class="custom-card"><h3>📸 Form Arşivi</h3><p>Haftalık form fotoğraflarını yükle, kilo ve yağ değişimini incele.</p></div>',
+            unsafe_allow_html=True)
         st.button("Arşive Git ➡️", use_container_width=True, key="btn_arsiv", on_click=sayfa_degistir,
                   args=("📸 Vücut Dönüşüm & Form Arşivi",))
 
         st.write("")
-        st.markdown("""
-            <div class="custom-card">
-                <h3>🤖 AI Kalori Asistanı</h3>
-                <p>Yediğin öğünleri yaz, kalori ve protein değerini anında hesaplasın.</p>
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown(
+            '<div class="custom-card"><h3>🤖 AI Kalori Asistanı</h3><p>Yediğin öğünleri yaz, kalori ve protein değerini anında hesaplasın.</p></div>',
+            unsafe_allow_html=True)
         st.button("AI Asistana Git ➡️", use_container_width=True, key="btn_ai", on_click=sayfa_degistir,
                   args=("🤖 AI Kalori & Beslenme",))
 
         st.write("")
-        st.markdown("""
-            <div class="custom-card">
-                <h3>🗓️ PPL Antrenman Takvimi</h3>
-                <p>Haftalık Push-Pull-Legs günlerini ve antrenman notlarını kaydet.</p>
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown(
+            '<div class="custom-card"><h3>🗓️ PPL Antrenman Takvimi</h3><p>Haftalık Push-Pull-Legs günlerini ve antrenman notlarını kaydet.</p></div>',
+            unsafe_allow_html=True)
         st.button("PPL Takvimine Git ➡️", use_container_width=True, key="btn_ppl", on_click=sayfa_degistir,
                   args=("🗓️ Antrenman & PPL Takvimi",))
 
     with c3:
-        st.markdown("""
-            <div class="custom-card">
-                <h3>🔥 Kardiyo & Yağ Yakım</h3>
-                <p>Eğimli yürüyüşte (Incline Treadmill) yaktığın saf yağı hesapla.</p>
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown(
+            '<div class="custom-card"><h3>🔥 Kardiyo & Yağ Yakım</h3><p>Eğimli yürüyüşte (Incline Treadmill) yaktığın saf yağı hesapla.</p></div>',
+            unsafe_allow_html=True)
         st.button("Kardiyoya Git ➡️", use_container_width=True, key="btn_kardiyo", on_click=sayfa_degistir,
                   args=("🔥 Kardiyo & Yağ Yakım Hesaplayıcı",))
 
         st.write("")
-        st.markdown("""
-            <div class="custom-card">
-                <h3>🏋️‍♂️ Ağırlık & PR Takibi</h3>
-                <p>Salonda bastığın ağırlıkları, ön/arka kol rekorlarını kaydet.</p>
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown(
+            '<div class="custom-card"><h3>🏋️‍♂️ Ağırlık & PR Takibi</h3><p>Salonda bastığın ağırlıkları, ön/arka kol rekorlarını kaydet.</p></div>',
+            unsafe_allow_html=True)
         st.button("PR Takibine Git ➡️", use_container_width=True, key="btn_pr", on_click=sayfa_degistir,
                   args=("🏋️‍♂️ Ağırlık & PR Takibi",))
 
         st.write("")
-        st.markdown("""
-            <div class="custom-card">
-                <h3>💧 Supplement & Su</h3>
-                <p>Günlük 4 litre su hedefini ve Whey, Kreatin, Omega-3 kullanımını işaretle.</p>
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown(
+            '<div class="custom-card"><h3>💧 Supplement & Su</h3><p>Günlük 4 litre su hedefini ve Whey, Kreatin, Omega-3 kullanımını işaretle.</p></div>',
+            unsafe_allow_html=True)
         st.button("Supplement Takibine Git ➡️", use_container_width=True, key="btn_supp", on_click=sayfa_degistir,
                   args=("💧 Supplement & Su",))
 
