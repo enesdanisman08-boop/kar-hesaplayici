@@ -120,7 +120,7 @@ div[data-testid="stForm"] {{
             st.markdown('<div class="gymhub-welcome">Hoş Geldiniz • Sporcu Komuta Merkezi</div>',
                         unsafe_allow_html=True)
 
-            k_adi = st.text_input("Sporcu Kimliği", placeholder="Sporcu Adı )",
+            k_adi = st.text_input("Sporcu Kimliği", placeholder="Sporcu Adı)",
                                   label_visibility="collapsed").strip().lower()
             sifre = st.text_input("Erişim Şifresi", type="password", placeholder="Erişim Parolası",
                                   label_visibility="collapsed")
