@@ -61,10 +61,27 @@ ICERDEKILER = {
     "admin": "admin"
 }
 
+# Üstteki GitHub, Share, Yıldız ve Sağ Alttaki Manage App butonlarını gizleyen genel CSS
+gizleme_css = """
+    /* Sağ üstteki Share, Yıldız, GitHub ikonlarını ve üç noktayı gizle */
+    [data-testid="stToolbarActions"],
+    [data-testid="stAppDeployButton"],
+    #MainMenu,
+    footer {
+        display: none !important;
+        visibility: hidden !important;
+    }
+    /* Üst barın siyah arka planını şeffaf yap (Sol menü açma/kapama oku bozulmasın diye) */
+    header[data-testid="stHeader"] {
+        background: transparent !important;
+    }
+"""
+
 if not st.session_state["giris_yapildi"]:
     bg_style = arkaplan_ayarla()
     st.markdown(f"""
         <style>
+        {gizleme_css}
         .stApp {{
             background-image: {bg_style};
             background-size: cover;
@@ -179,7 +196,7 @@ with st.sidebar:
         st.rerun()
 
 # --- SAĞ ÜST KÖŞE YUVARLAK İKONLU TEMA BUTONU & ANA MENÜYE DÖNÜŞ ---
-top_col1, top_col2 = st.columns([11, 1])
+top_col1, top_col2 = st.columns([10, 2])
 with top_col1:
     if menu != "🏠 Ana Menü (Komuta Merkezi)":
         st.button("⬅️ Ana Menüye Dön", on_click=sayfa_degistir, args=("🏠 Ana Menü (Komuta Merkezi)",))
@@ -192,33 +209,35 @@ secilen_tema = st.session_state["secilen_tema"]
 
 # --- DİNAMİK TEMA VE YUVARLAK BUTON STİLLERİ ---
 
-# Üst boşluğu azaltma ve sağ üstteki tema butonunu tam yuvarlak yapma CSS'i
-ortak_css = """
-    /* Sayfanın üst boşluğunu yukarı çekme */
-    .block-container {
-        padding-top: 2rem !important;
-    }
-    /* Sağ üstteki tema butonunu tam yuvarlak ve sadece ikon yapma */
-    div.st-key-tema_btn {
+ortak_css = f"""
+    {gizleme_css}
+    /* Sayfanın üst boşluğunu ideal hizaya getirme (buton kesilmesin diye 3.5rem yapıldı) */
+    .block-container {{
+        padding-top: 3.5rem !important;
+    }}
+    /* Sağ üstteki tema butonunu tam yuvarlak, biraz daha aşağıda ve sağ köşede tutma */
+    div.st-key-tema_btn {{
         display: flex;
         justify-content: flex-end;
-    }
-    div.st-key-tema_btn button {
+        margin-top: 10px !important;
+        margin-right: 15px !important;
+    }}
+    div.st-key-tema_btn button {{
         border-radius: 50% !important;
-        width: 46px !important;
-        height: 46px !important;
-        min-height: 46px !important;
+        width: 50px !important;
+        height: 50px !important;
+        min-height: 50px !important;
         padding: 0 !important;
-        font-size: 22px !important;
+        font-size: 24px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.35) !important;
         transition: transform 0.2s ease !important;
-    }
-    div.st-key-tema_btn button:hover {
-        transform: scale(1.08) !important;
-    }
+    }}
+    div.st-key-tema_btn button:hover {{
+        transform: scale(1.1) !important;
+    }}
 """
 
 if secilen_tema == "Koyu":
@@ -230,7 +249,7 @@ if secilen_tema == "Koyu":
         .stButton>button {{ background-color: #4f46e5 !important; color: #ffffff !important; font-weight: bold !important; border-radius: 8px !important; border: none !important; }}
         div.st-key-tema_btn button {{
             background-color: #1e293b !important;
-            border: 2px solid #475569 !important;
+            border: 2px solid #4f46e5 !important;
         }}
         .custom-card {{
             background-color: #161b22 !important;
@@ -258,7 +277,7 @@ else:  # Açık Mod
         .stButton>button p {{ color: #ffffff !important; }}
         div.st-key-tema_btn button {{
             background-color: #ffffff !important;
-            border: 2px solid #cbd5e1 !important;
+            border: 2px solid #0284c7 !important;
         }}
         .custom-card {{
             background-color: #ffffff !important;
