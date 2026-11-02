@@ -1,6 +1,7 @@
 from datetime import datetime
 import os
 import time
+import base64
 import streamlit as st
 
 # Sayfa Ayarları ve Mobil PWA Entegrasyonu
@@ -11,7 +12,7 @@ if "giris_yapildi" not in st.session_state:
     st.session_state["giris_yapildi"] = False
 
 if "secilen_tema" not in st.session_state:
-    st.session_state["secilen_tema"] = "🌙 Koyu Mod"
+    st.session_state["secilen_tema"] = "Koyu"
 
 if "aktif_sayfa" not in st.session_state:
     st.session_state["aktif_sayfa"] = "🏠 Ana Menü (Komuta Merkezi)"
@@ -36,23 +37,42 @@ def sayfa_degistir(hedef_sayfa):
     st.session_state["aktif_sayfa"] = hedef_sayfa
 
 
+def tema_degistir():
+    if st.session_state["secilen_tema"] == "Koyu":
+        st.session_state["secilen_tema"] = "Acik"
+    else:
+        st.session_state["secilen_tema"] = "Koyu"
+
+
+# Bilgisayarındaki resmi arka plana çeviren fonksiyon (arkaplan.jpg veya arkaplan.png varsa kullanır)
+def arkaplan_ayarla():
+    for dosya in ["arkaplan.jpg", "arkaplan.jpeg", "arkaplan.png"]:
+        if os.path.exists(dosya):
+            with open(dosya, "rb") as f:
+                data = f.read()
+            bin_str = base64.b64encode(data).decode()
+            return f"linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.80)), url('data:image/jpeg;base64,{bin_str}')"
+    # Klasörde resim yoksa varsayılan modern koyu geçişli arka plan
+    return "radial-gradient(circle at center, #1e293b 0%, #0f172a 50%, #020617 100%)"
+
+
 ICERDEKILER = {
     "enes": "1453",
     "admin": "admin"
 }
 
 if not st.session_state["giris_yapildi"]:
-    st.markdown("""
+    bg_style = arkaplan_ayarla()
+    st.markdown(f"""
         <style>
-        .stApp {
-            background-image: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.85)), 
-                              url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1920&auto=format&fit=crop');
+        .stApp {{
+            background-image: {bg_style};
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
-        }
-        .login-container {
+        }}
+        .login-container {{
             background: rgba(13, 17, 23, 0.85);
             backdrop-filter: blur(10px);
             border: 2px solid rgba(79, 70, 229, 0.6);
@@ -62,21 +82,21 @@ if not st.session_state["giris_yapildi"]:
             text-align: center;
             max-width: 450px;
             margin: 20px auto;
-        }
-        .login-title {
+        }}
+        .login-title {{
             color: #ffffff;
             font-size: 26px;
             font-weight: bold;
             margin-bottom: 8px;
             text-transform: uppercase;
             letter-spacing: 1px;
-        }
-        .login-subtitle {
+        }}
+        .login-subtitle {{
             color: #38bdf8;
             font-size: 13px;
             margin-bottom: 20px;
             font-weight: 600;
-        }
+        }}
         </style>
 
         <div class="login-container">
@@ -114,7 +134,6 @@ with st.sidebar:
         index=SAYFA_LISTESI.index(st.session_state["aktif_sayfa"])
     )
 
-    # Sol menüden seçim değişirse aktif sayfayı güncelle
     if secilen_menu != st.session_state["aktif_sayfa"]:
         st.session_state["aktif_sayfa"] = secilen_menu
         st.rerun()
@@ -159,30 +178,61 @@ with st.sidebar:
         st.session_state["giris_yapildi"] = False
         st.rerun()
 
-# --- SAĞ ÜST KÖŞE GÖRÜNÜM KONTROLÜ & ANA MENÜYE DÖNÜŞ ---
-top_col1, top_col2 = st.columns([6, 2])
+# --- SAĞ ÜST KÖŞE YUVARLAK İKONLU TEMA BUTONU & ANA MENÜYE DÖNÜŞ ---
+top_col1, top_col2 = st.columns([11, 1])
 with top_col1:
     if menu != "🏠 Ana Menü (Komuta Merkezi)":
         st.button("⬅️ Ana Menüye Dön", on_click=sayfa_degistir, args=("🏠 Ana Menü (Komuta Merkezi)",))
 with top_col2:
-    st.session_state["secilen_tema"] = st.selectbox(
-        "Görünüm Modu:",
-        ["🌙 Koyu Mod", "☀️ Açık Mod", "💻 PC Teması (Neon Yeşil)"],
-        index=["🌙 Koyu Mod", "☀️ Açık Mod", "💻 PC Teması (Neon Yeşil)"].index(st.session_state["secilen_tema"]),
-        label_visibility="collapsed"
-    )
+    # Koyu moddaysa Güneş (☀️), Açık moddaysa Ay (🌙) ikonu gösterir
+    tema_ikonu = "☀️" if st.session_state["secilen_tema"] == "Koyu" else "🌙"
+    st.button(tema_ikonu, key="tema_btn", on_click=tema_degistir)
 
 secilen_tema = st.session_state["secilen_tema"]
 
-# --- DİNAMİK TEMA VE ÖZEL KART STİLLERİ ---
+# --- DİNAMİK TEMA VE YUVARLAK BUTON STİLLERİ ---
 
-if secilen_tema == "🌙 Koyu Mod":
-    st.markdown("""
+# Üst boşluğu azaltma ve sağ üstteki tema butonunu tam yuvarlak yapma CSS'i
+ortak_css = """
+    /* Sayfanın üst boşluğunu yukarı çekme */
+    .block-container {
+        padding-top: 2rem !important;
+    }
+    /* Sağ üstteki tema butonunu tam yuvarlak ve sadece ikon yapma */
+    div.st-key-tema_btn {
+        display: flex;
+        justify-content: flex-end;
+    }
+    div.st-key-tema_btn button {
+        border-radius: 50% !important;
+        width: 46px !important;
+        height: 46px !important;
+        min-height: 46px !important;
+        padding: 0 !important;
+        font-size: 22px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+        transition: transform 0.2s ease !important;
+    }
+    div.st-key-tema_btn button:hover {
+        transform: scale(1.08) !important;
+    }
+"""
+
+if secilen_tema == "Koyu":
+    st.markdown(f"""
         <style>
-        .stApp { background-color: #0e1117; color: #fafafa; }
-        div[data-testid="stMetric"] { background-color: #262730; border: 1px solid #4f46e5; padding: 12px; border-radius: 10px; }
-        .stButton>button { background-color: #4f46e5 !important; color: #ffffff !important; font-weight: bold !important; border-radius: 8px !important; border: none !important; }
-        .custom-card {
+        {ortak_css}
+        .stApp {{ background-color: #0e1117; color: #fafafa; }}
+        div[data-testid="stMetric"] {{ background-color: #262730; border: 1px solid #4f46e5; padding: 12px; border-radius: 10px; }}
+        .stButton>button {{ background-color: #4f46e5 !important; color: #ffffff !important; font-weight: bold !important; border-radius: 8px !important; border: none !important; }}
+        div.st-key-tema_btn button {{
+            background-color: #1e293b !important;
+            border: 2px solid #475569 !important;
+        }}
+        .custom-card {{
             background-color: #161b22 !important;
             border: 1px solid #30363d !important;
             border-radius: 12px !important;
@@ -190,22 +240,27 @@ if secilen_tema == "🌙 Koyu Mod":
             margin-bottom: 12px !important;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
             color: #fafafa !important;
-        }
-        .custom-card h3 { color: #ffffff !important; margin-top: 0 !important; }
-        .custom-card p { color: #cbd5e1 !important; margin-bottom: 0 !important; }
+        }}
+        .custom-card h3 {{ color: #ffffff !important; margin-top: 0 !important; }}
+        .custom-card p {{ color: #cbd5e1 !important; margin-bottom: 0 !important; }}
         </style>
     """, unsafe_allow_html=True)
 
-elif secilen_tema == "☀️ Açık Mod":
-    st.markdown("""
+else:  # Açık Mod
+    st.markdown(f"""
         <style>
-        .stApp { background-color: #f8fafc; color: #0f172a; }
-        .stApp h1, .stApp h2, .stApp h3, .stApp p, .stApp span, .stApp label { color: #0f172a !important; }
-        div[data-testid="stSidebar"] { background-color: #f1f5f9 !important; }
-        div[data-testid="stMetric"] { background-color: #ffffff; border: 1px solid #cbd5e1; padding: 12px; border-radius: 10px; color: #0f172a !important; }
-        .stButton>button { background-color: #0284c7 !important; color: #ffffff !important; font-weight: bold !important; border-radius: 8px !important; border: none !important; }
-        .stButton>button p { color: #ffffff !important; }
-        .custom-card {
+        {ortak_css}
+        .stApp {{ background-color: #f8fafc; color: #0f172a; }}
+        .stApp h1, .stApp h2, .stApp h3, .stApp p, .stApp span, .stApp label {{ color: #0f172a !important; }}
+        div[data-testid="stSidebar"] {{ background-color: #f1f5f9 !important; }}
+        div[data-testid="stMetric"] {{ background-color: #ffffff; border: 1px solid #cbd5e1; padding: 12px; border-radius: 10px; color: #0f172a !important; }}
+        .stButton>button {{ background-color: #0284c7 !important; color: #ffffff !important; font-weight: bold !important; border-radius: 8px !important; border: none !important; }}
+        .stButton>button p {{ color: #ffffff !important; }}
+        div.st-key-tema_btn button {{
+            background-color: #ffffff !important;
+            border: 2px solid #cbd5e1 !important;
+        }}
+        .custom-card {{
             background-color: #ffffff !important;
             border: 2px solid #cbd5e1 !important;
             border-radius: 12px !important;
@@ -213,29 +268,9 @@ elif secilen_tema == "☀️ Açık Mod":
             margin-bottom: 12px !important;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
             color: #0f172a !important;
-        }
-        .custom-card h3 { color: #0f172a !important; margin-top: 0 !important; }
-        .custom-card p { color: #334155 !important; margin-bottom: 0 !important; }
-        </style>
-    """, unsafe_allow_html=True)
-
-elif secilen_tema == "💻 PC Teması (Neon Yeşil)":
-    st.markdown("""
-        <style>
-        .stApp { background: linear-gradient(135deg, #0a0f0d 0%, #111a16 100%); color: #e0f2e9; }
-        div[data-testid="stMetric"] { background-color: #16241d; border: 1px solid #00ff88; padding: 12px; border-radius: 10px; box-shadow: 0 0 8px rgba(0, 255, 136, 0.15); }
-        .stButton>button { background-color: #00ff88 !important; color: #05140c !important; font-weight: bold !important; border-radius: 8px !important; border: none !important; }
-        .custom-card {
-            background-color: #16241d !important;
-            border: 1px solid #00ff88 !important;
-            border-radius: 12px !important;
-            padding: 20px !important;
-            margin-bottom: 12px !important;
-            box-shadow: 0 0 10px rgba(0, 255, 136, 0.15) !important;
-            color: #e0f2e9 !important;
-        }
-        .custom-card h3 { color: #00ff88 !important; margin-top: 0 !important; }
-        .custom-card p { color: #e0f2e9 !important; margin-bottom: 0 !important; }
+        }}
+        .custom-card h3 {{ color: #0f172a !important; margin-top: 0 !important; }}
+        .custom-card p {{ color: #334155 !important; margin-bottom: 0 !important; }}
         </style>
     """, unsafe_allow_html=True)
 
